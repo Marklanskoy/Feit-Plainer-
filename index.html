@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feit Planner — твой день под контролем</title>
+<meta name="theme-color" content="#4f6bff">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#171a21;--mu:#737b8c;--ac:#4f6bff;--acx:#fff;--wr:#ce6e20;--bd:#e9ecf2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141a;--card:#1c1f27;--tx:#eceef2;--mu:#a3acbb;--ac:#8aa6ff;--acx:#10131a;--wr:#f5a35c;--bd:#2b2f3a}}
+:root[data-theme="dark"]{--bg:#12141a;--card:#1c1f27;--tx:#eceef2;--mu:#a3acbb;--ac:#8aa6ff;--acx:#10131a;--wr:#f5a35c;--bd:#2b2f3a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:24px 22px 150px}
+h1{font-size:30px;letter-spacing:-1px;margin:0 0 8px}h2{font-size:20px;letter-spacing:-.4px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}p{margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px;margin:0 0 15px;box-shadow:0 5px 22px rgba(22,37,81,.035)}
+.mu{color:var(--mu);font-size:14px}.warn{color:var(--wr)}.ttl{font-weight:600}.dn{text-decoration:line-through;color:var(--mu)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--bd);background:var(--card);cursor:pointer}
+button.pri{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+button.lnk{border:0;background:none;color:var(--ac);padding:0;text-align:left;text-decoration:underline}
+button.blk{width:100%;margin:0 0 8px;text-align:left}
+input,select,textarea{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);display:block;margin-top:4px}
+label{display:block;margin:0 0 12px;font-size:14px;color:var(--mu)}
+label.ck{display:flex;gap:10px;align-items:center;color:var(--tx);font-size:16px}label.ck input{width:24px;min-height:24px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1 1 90px}
+.task{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--bd)}.task:last-child{border:0}
+.task button{flex:none}.grow{flex:1;min-width:0;overflow-wrap:anywhere}
+.li{padding:6px 0 6px 10px;border-left:4px solid var(--ac);margin:0 0 8px;overflow-wrap:anywhere}.li.fix{border-left-color:var(--wr);border-left-style:double}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5;justify-content:center}
+nav button{flex:1;max-width:180px;border:0;border-radius:0;min-height:62px;background:none;font-size:12px;display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center}
+nav button[aria-current="page"]{color:var(--ac);font-weight:700;background:color-mix(in srgb,var(--ac) 7%,transparent)}
+.fab{position:fixed;z-index:6;right:20px;bottom:calc(72px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:28px;font-size:28px;padding:0;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+dialog{width:min(92vw,440px);max-height:88vh;max-height:88dvh;overflow:auto;border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .15s;max-width:90vw;z-index:9}
+.toast.show{opacity:1}.toast.bad{background:var(--wr);color:#fff}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.brand{display:flex;align-items:center;gap:11px;margin-bottom:24px}.brandmark{width:38px;height:38px;background:var(--ac);color:#fff;border-radius:13px;display:grid;place-items:center;font-weight:900;font-size:21px}.eyebrow{text-transform:uppercase;letter-spacing:1.7px;color:var(--mu);font-weight:700;font-size:10px}.sub{color:var(--mu);font-size:14px;margin-bottom:18px}.hero{background:linear-gradient(135deg,#4f6bff,#738aff);border:0;color:#fff}.hero .mu,.hero .warn{color:#e5e9ff}.hero button{background:#fff;color:#364fdd;border:0}.progress{height:8px;border-radius:8px;background:rgba(110,120,150,.16);overflow:hidden;margin:12px 0}.progress>span{display:block;height:100%;background:#4f6bff;border-radius:8px}.hero .progress{background:#ffffff40}.hero .progress>span{background:white}.metric{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0}.metric b{font-size:22px;display:block}.pill{display:inline-block;background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac);padding:5px 9px;border-radius:999px;font-size:12px;font-weight:650}.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:20px 0 12px}.sectionhead h2{margin:0}.mutedbox{background:var(--bg);border-radius:13px;padding:14px;margin-top:10px}.twocol{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}.daygrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.daycell{min-height:85px;padding:8px 4px;border:1px solid var(--bd);background:var(--card);border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:6px}.daycell.active{border:2px solid var(--ac);background:color-mix(in srgb,var(--ac) 7%,var(--card))}.daycell small{color:var(--mu);font-size:10px}.daycell b{font-size:17px}.dot{width:6px;height:6px;border-radius:50%;background:var(--ac);display:inline-block}.taskcheck{height:30px;min-height:30px;width:30px;padding:0;border-radius:50%;color:var(--ac);border:2px solid var(--bd)}.taskcheck.done{background:#24a477;border-color:#24a477;color:white}.seg{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}.seg button{min-height:36px;border-radius:10px}.seg .on{background:var(--ac);color:white;border-color:var(--ac)}.eventline{display:flex;gap:12px;margin:12px 0;align-items:stretch}.eventtime{width:58px;flex:none;color:var(--mu);font-size:12px;padding-top:12px}.eventbody{flex:1;padding:13px 14px;background:var(--bg);border-left:3px solid var(--ac);border-radius:10px}.eventbody.fixed{border-left-color:#f0aa4f}.statrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}.float-actions{display:flex;gap:8px}.float-actions button{min-height:34px;font-size:12px}.goalbar{height:7px;background:var(--bd);border-radius:10px;overflow:hidden;margin:12px 0}.goalbar div{height:100%;background:var(--ac);border-radius:10px}.focus-clock{text-align:center;font-variant-numeric:tabular-nums;font-size:60px;font-weight:750;letter-spacing:-3px;margin:25px 0}.empty{text-align:center;color:var(--mu);padding:26px 12px}.empty strong{display:block;color:var(--tx);font-size:17px;margin-bottom:4px}dialog{box-shadow:0 25px 100px #0003}dialog h2{margin-bottom:22px}button:disabled{opacity:.5;cursor:not-allowed}@media(max-width:650px){main{padding:15px 14px 155px}.twocol{grid-template-columns:1fr}.daycell{min-height:70px}.card{padding:17px}.metric{gap:14px}nav button{font-size:11px}.fab{right:16px}}@media(min-width:950px){main{padding-top:30px}.fab{right:calc(50% - 440px)}}
+</style>
+</head>
+<body>
+<script>
+"use strict";
+const h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a){const v=a[k];if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);else if(k==='class')e.className=v;else if(v!==false&&v!=null)e.setAttribute(k,v===true?'':v)}e.append(...c.flat().filter(x=>x!=null&&x!==false));return e};
+const pad=n=>String(n).padStart(2,'0'),hm=m=>pad(m/60|0)+':'+pad(m%60),pm=s=>{const[a,b]=s.split(':');return a*60+ +b};
+const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>dstr(new Date()),tom=()=>{const d=new Date();d.setDate(d.getDate()+1);return dstr(d)};
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const dur=m=>m>=60?(m/60|0)+' ч'+(m%60?' '+m%60+' мин':''):m+' мин';
+const dm=s=>s.split('-').reverse().slice(0,2).join('.'),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+/* ===== Планировщик: чистая функция, без DOM и хранилища. Эвристика, не «оптимум» ===== */
+const need=t=>t.left||t.min||30;
+function planDay(tasks,events,set,now,td){
+ const lo=Math.min(set.e,Math.max(set.s,now)),hi=set.e;
+ const cand=tasks.filter(t=>!t.del&&t.st==='active'&&(t.day===td||(t.due&&t.due.slice(0,10)<=td)));
+ const fixed=cand.filter(t=>t.locked&&t.block&&t.day===td&&t.block.e>lo);
+ const occupied=[...events.filter(e=>e.day===td).map(e=>[e.s,e.e]),...fixed.map(t=>[t.block.s,t.block.e])].map(([a,b])=>[Math.max(a,lo),Math.min(b,hi)]).filter(([a,b])=>b>a).sort((a,b)=>a[0]-b[0]);
+ const free=[];let at=lo;for(const [a,b] of occupied){if(a>at)free.push([at,a]);at=Math.max(at,b)}if(hi>at)free.push([at,hi]);
+ const total=free.reduce((v,[a,b])=>v+b-a,0);
+ const dl=t=>t.due&&t.due.slice(0,10)<=td?(t.due.slice(0,10)<td?lo:pm(t.due.slice(11,16))):Infinity;
+ const movable=cand.filter(t=>!fixed.includes(t)).sort((a,b)=>dl(a)-dl(b)||(b.main|0)-(a.main|0)||(b.priority||0)-(a.priority||0)||a.ts-b.ts);
+ const gaps=free.map(x=>x.slice()),placed=fixed.map(t=>({t,s:t.block.s,e:t.block.e})),unplaced=[];
+ for(const t of movable){const n=need(t),deadline=dl(t);let idx=gaps.findIndex(g=>Math.min(g[1],deadline)-g[0]>=n);
+  if(idx>=0){const g=gaps[idx],s=g[0];placed.push({t,s,e:s+n});g[0]=Math.min(g[1],s+n+Math.max(0,set.gap||0));continue}
+  const available=gaps.reduce((a,g)=>a+Math.max(0,Math.min(g[1],deadline)-g[0]),0);
+  const maxgap=Math.max(0,...gaps.map(g=>Math.max(0,Math.min(g[1],deadline)-g[0])));
+  unplaced.push({t,n,why:deadline<Infinity?'Недостаточно непрерывного времени до срока: '+dur(maxgap)+' из '+dur(n):available<n?'Осталось '+dur(available)+', требуется '+dur(n):'Нет непрерывного интервала на '+dur(n)});
+ }
+ return {free,total,placed,unplaced,planned:cand.reduce((a,t)=>a+need(t),0)};
+}
+
+/* ===== Хранилище: IndexedDB, «Сохранено» только после завершения транзакции ===== */
+let dbp;const idb=()=>dbp||(dbp=new Promise((ok,no)=>{const r=indexedDB.open('ritm',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}).catch(e=>{dbp=null;throw e}));
+const put=async(k,v)=>{const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=ok;t.onerror=t.onabort=()=>no(t.error)})};
+const get=async k=>{const d=await idb();return new Promise((ok,no)=>{const r=d.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})};
+
+/* ===== Состояние ===== */
+const empty=()=>({v:1,tasks:[],events:[],set:{s:540,e:1080,gap:10},undo:null,projects:[],goals:[],sessions:[]});
+let S,view='today',flt='inbox',q='';
+const dlg=h('dialog'),tz=h('div',{class:'toast',role:'status','aria-live':'polite'});let tt;
+const toast=(m,bad)=>{tz.textContent=m;tz.className='toast show'+(bad?' bad':'');clearTimeout(tt);tt=setTimeout(()=>{tz.className='toast'},2800)};
+let writeQueue=Promise.resolve();
+function commit(n,msg){S=n;render();const snapshot=structuredClone(n);const task=writeQueue.catch(()=>{}).then(()=>put('state',snapshot));writeQueue=task;return task.then(()=>{if(msg)toast(msg);return true}).catch(()=>{toast('Не удалось сохранить. Экспортируйте данные и повторите попытку',true);return false})}
+const mut=(fn,msg)=>{const n=structuredClone(S);fn(n);return commit(n,msg)};
+const patch=(t,o,m)=>mut(n=>{n.undo=null;const x=n.tasks.find(y=>y.id===t.id);if(x)Object.assign(x,o)},m);
+const setSt=(t,st)=>patch(t,{st},st==='done'?'Готово':'Возвращено в работу');
+const snap=t=>({day:t.day,block:t.block||null,moves:t.moves||0,left:t.left||null});
+const postpone=t=>mut(n=>{const x=n.tasks.find(y=>y.id===t.id);n.undo={label:'Отложено: '+t.title,items:[{id:t.id,b:snap(x)}]};Object.assign(x,{day:tom(),block:null,moves:(x.moves||0)+1})},'Отложено на завтра');
+const undo=()=>mut(n=>{for(const i of n.undo.items){const t=n.tasks.find(x=>x.id===i.id);if(t&&t.st==='active')Object.assign(t,i.b)}n.undo=null},'Изменение отменено');
+const overdue=t=>t.st==='active'&&t.due&&t.due<today()+'T'+hm(nowMin());
+const meta=t=>[t.min||t.left?dur(t.left||t.min):'Длительность не указана',t.main&&'★ Главное',t.day&&'на '+(t.day===today()?'сегодня':dm(t.day)),t.due&&'срок '+t.due.replace('T',' '),overdue(t)&&'Просрочено',t.st==='wait'&&t.chk&&'проверить '+dm(t.chk),t.st==='cancel'&&'отменена',t.moves&&'переносов: '+t.moves].filter(Boolean).join(' · ');
+
+/* ===== Диалоги ===== */
+function form(title,fields,ok){
+  const err=h('p',{class:'warn',role:'alert'}),I={};
+  const f=h('form',{onsubmit:async e=>{e.preventDefault();const v={};for(const k in I)v[k]=I[k].type==='checkbox'?I[k].checked:I[k].value;const r=await ok(v);if(typeof r==='string'){err.textContent=r;return}if(r!==false)dlg.close()}},
+    h('h2',{},title),
+    ...fields.map(([k,lab,type,val,at])=>{const i=h('input',{type,name:k,...at});if(type==='checkbox')i.checked=!!val;else i.value=val==null?'':val;I[k]=i;return h('label',{class:type==='checkbox'?'ck':''},type==='checkbox'?[i,lab]:[lab,i])}),
+    err,h('div',{class:'row'},h('button',{type:'button',onclick:()=>dlg.close()},'Отмена'),h('button',{class:'pri'},'Сохранить')));
+  dlg.replaceChildren(f);if(!dlg.open)dlg.showModal();
+}
+function editTask(t){
+  const td=today(),isNew=!t;t=t||{};
+  form(isNew?'Новая задача':'Задача',[
+    ['title','Название','text',t.title,{required:true,maxlength:120}],
+    ['min','Длительность, мин (необязательно)','number',t.min||'',{min:5,max:600,step:5,inputmode:'numeric'}],
+    ['today','На сегодня','checkbox',t.day===td],
+    ['main','Главное сегодня (до трёх)','checkbox',t.main],
+    ['due','Жёсткий срок (необязательно)','datetime-local',t.due||''],
+     ['description','Описание','text',t.description||''],
+     ['project','Проект (название)','text',t.project||''],
+     ['priority','Приоритет (0–3)','number',t.priority||0,{min:0,max:3}],
+     ['repeat','Повтор: none / daily / weekly / monthly','text',t.repeat||'none'],
+     ['locked','Закрепить запланированный блок','checkbox',t.locked||false]],v=>{
+    const title=v.title.trim();if(!title)return'Введите название';
+    if(v.main&&v.today&&S.tasks.filter(x=>!x.del&&x.st==='active'&&x.day===td&&x.main&&x.id!==t.id).length>=3)return'Главных дел на сегодня не больше трёх';
+    const f={title,min:+v.min||0,main:v.main,due:v.due,description:v.description,project:v.project,priority:Math.max(0,Math.min(3,+v.priority||0)),repeat:['none','daily','weekly','monthly'].includes(v.repeat)?v.repeat:'none',locked:v.locked,day:v.today?td:(t.day&&t.day>td?t.day:null)};
+    if(isNew)return mut(n=>{n.tasks.push({id:uid(),st:'active',moves:0,ts:Date.now(),block:null,...f})},'Задача сохранена');
+    if(f.day!==t.day)f.block=null;if(f.min!==(t.min||0))f.left=0;
+    return patch(t,f,'Задача сохранена');
+  });
+}
+const addEvent=()=>form('Новое событие',[['title','Название','text','',{required:true,maxlength:80}],['day','Дата','date',today(),{required:true}],['s','Начало','time','10:00',{required:true}],['e','Конец','time','11:00',{required:true}]],v=>{
+  const s=pm(v.s),e=pm(v.e);if(e<=s)return'Конец должен быть позже начала';
+  return mut(n=>{n.events.push({id:uid(),title:v.title.trim(),day:v.day,s,e})},'Событие сохранено');
+});
+function help(t){
+  const o=(l,f)=>h('button',{class:'blk',onclick:f},l);
+  dlg.replaceChildren(h('div',{},h('h2',{},'Что мешает начать?'),h('p',{class:'mu'},'«'+t.title+'»'),
+    o('Не хватает времени',()=>{dlg.close();editTask(t)}),
+    o('Не понимаю, с чего начать',()=>form('Первый шаг на 5–15 минут',[['title','Первое конкретное действие','text','Открыть материалы и записать первый шаг по «'+t.title.slice(0,60)+'»',{required:true,maxlength:120}],['min','Минут','number',10,{min:5,max:15}]],v=>mut(n=>{n.tasks.push({id:uid(),st:'active',moves:0,ts:Date.now(),block:null,title:v.title.trim(),min:+v.min||10,main:false,due:'',day:today()})},'Первый шаг добавлен на сегодня'))),
+    o('Жду другого человека',()=>form('Когда проверить ответ?',[['chk','Дата проверки','date',tom(),{required:true}]],v=>patch(t,{st:'wait',chk:v.chk,block:null},'Задача в «Ожидании»'))),
+    o('Это больше не нужно',()=>{dlg.close();patch(t,{st:'cancel',block:null},'Задача отменена')}),
+    h('button',{class:'blk',onclick:()=>dlg.close()},'Закрыть')));
+  if(!dlg.open)dlg.showModal();
+}
+
+/* ===== Перестроить день: предпросмотр ничего не сохраняет ===== */
+function rebuild(){
+  const rb={left:{},off:{},end:S.set.e};
+  const calc=()=>planDay(S.tasks.map(t=>rb.left[t.id]?{...t,left:rb.left[t.id]}:t),S.events,{...S.set,e:rb.end},nowMin(),today());
+  const mv=u=>!u.t.main&&!(u.t.due&&u.t.due.slice(0,10)===today());
+  const apply=async()=>{
+    const p=calc(),items=[];
+    const ok=await mut(n=>{
+      const g=id=>n.tasks.find(x=>x.id===id);
+      for(const x of p.placed){const t=g(x.t.id);items.push({id:t.id,b:snap(t)});t.block={s:x.s,e:x.e};if(rb.left[t.id])t.left=rb.left[t.id]}
+      for(const u of p.unplaced){const t=g(u.t.id);items.push({id:t.id,b:snap(t)});t.block=null;if(rb.left[t.id])t.left=rb.left[t.id];if(mv(u)&&!rb.off[t.id]){t.day=tom();t.moves=(t.moves||0)+1}}
+      if(items.length)n.undo={label:'Перестроение дня',items};
+    },'План обновлён');
+    if(ok)dlg.close();
+  };
+  const draw=()=>{
+    const p=calc(),td=today();
+    const old=t=>t.block?hm(t.block.s)+'–'+hm(t.block.e):null;
+    dlg.replaceChildren(h('div',{},h('h2',{},'Предложение'),h('p',{class:'mu'},'Ничего не сохранено, пока вы не нажмёте «Применить». Фиксированные события не двигаются.'),
+      h('label',{},'Закончить сегодня в',h('input',{type:'time',value:hm(rb.end),onchange:e=>{if(e.target.value){rb.end=pm(e.target.value);draw()}}})),
+      ...S.tasks.filter(t=>!t.del&&t.st==='active'&&t.started&&t.day===td).map(t=>h('label',{},'Осталось по «'+t.title+'», мин',h('input',{type:'number',min:5,step:5,value:rb.left[t.id]||t.left||t.min||30,onchange:e=>{rb.left[t.id]=+e.target.value||0;draw()}}))),
+      h('h3',{},'Размещено: '+p.placed.length),
+      ...p.placed.map(x=>{const o=old(x.t),n=hm(x.s)+'–'+hm(x.e);return h('div',{class:'li'},h('b',{},n+' '),x.t.title,h('div',{class:'mu'},o===n?'без изменений':o?'сдвинулось (было '+o+')':'новое время'+(x.t.min||x.t.left?'':' · оценка 30 мин — это предположение')))}),
+      p.unplaced.length>0&&h('h3',{class:'warn'},'Не помещается: '+p.unplaced.length),
+      ...p.unplaced.map(u=>h('div',{class:'li fix'},h('b',{},u.t.title),h('div',{class:'mu'},u.why),mv(u)?h('label',{class:'ck'},h('input',{type:'checkbox',checked:!rb.off[u.t.id],onchange:e=>{rb.off[u.t.id]=!e.target.checked}}),'Перенести на завтра: у задачи нет жёсткого срока'):h('div',{class:'mu'},'Остаётся на сегодня: есть срок или она отмечена главной. Решите вручную.'))),
+      h('div',{class:'row'},h('button',{onclick:()=>dlg.close()},'Отмена'),h('button',{onclick:()=>{dlg.close();view='tasks';flt='today';render()}},'Вручную'),h('button',{class:'pri',onclick:apply},'Применить'))));
+  };
+  draw();if(!dlg.open)dlg.showModal();
+}
+
+/* ===== Экраны ===== */
+const F=[['inbox','Входящие'],['today','Сегодня'],['soon','Предстоящие'],['wait','Ожидание'],['done','Завершённые'],['trash','Корзина']];
+const tr=t=>h('div',{class:'task'},
+  h('button',{'aria-label':t.st==='done'||t.st==='cancel'?'Вернуть в работу':'Отметить выполненной',onclick:()=>setSt(t,t.st==='done'||t.st==='cancel'?'active':'done')},t.st==='done'?'☑':'☐'),
+  h('div',{class:'grow'},h('div',{class:t.st==='done'?'ttl dn':'ttl'},t.title),h('div',{class:'mu'},meta(t)),
+    t.moves>=3&&t.st==='active'&&h('button',{class:'lnk',onclick:()=>help(t)},'Эта задача несколько раз переносилась. Что мешает начать?'),
+    t.st==='wait'&&h('button',{class:'lnk',onclick:()=>patch(t,{st:'active'},'Возвращено в работу')},'Вернуть в работу')),
+  t.del?h('button',{onclick:()=>patch(t,{del:0},'Задача восстановлена')},'Вернуть'):[h('button',{'aria-label':'Изменить «'+t.title+'»',onclick:()=>editTask(t)},'Изм.'),h('button',{'aria-label':'Удалить «'+t.title+'»',onclick:()=>patch(t,{del:Date.now()},'Удалено. Вернуть можно в «Корзине»')},'Удал.')]);
+
+function vTasks(){
+  const td=today(),box=h('div',{class:'card'});
+  const fill=()=>{
+    const f={inbox:t=>t.st==='active'&&!t.day,today:t=>t.st==='active'&&t.day===td,soon:t=>t.st==='active'&&t.day>td,wait:t=>t.st==='wait',done:t=>t.st==='done'||t.st==='cancel',trash:()=>true}[flt];
+    const L=S.tasks.filter(t=>(flt==='trash'?t.del:!t.del&&f(t))&&t.title.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>b.ts-a.ts);
+    box.replaceChildren(...(L.length?L.map(tr):[h('p',{class:'mu'},S.tasks.length?'Здесь ничего нет.':'Пока пусто. Добавьте первое дело кнопкой «+».')]));
+  };
+  fill();
+  return h('div',{},h('div',{class:'sectionhead'},h('h1',{},'Задачи'),h('button',{onclick:()=>{view='projects';render()}},'Проекты')),h('div',{class:'row'},h('input',{type:'search','aria-label':'Поиск',placeholder:'Поиск',value:q,oninput:e=>{q=e.target.value;fill()}}),h('select',{'aria-label':'Фильтр',onchange:e=>{flt=e.target.value;fill()}},...F.map(([k,l])=>h('option',{value:k,selected:k===flt},l)))),h('div',{style:'height:12px'}),box);
+}
+
+function vToday(){
+  const td=today(),n=nowMin(),p=planDay(S.tasks,S.events,S.set,n,td);
+  const act=S.tasks.filter(t=>!t.del&&t.st==='active'&&t.day===td);
+  const items=[...act.filter(t=>t.block&&t.block.e>n).map(t=>({t,s:t.block.s,e:t.block.e})),...S.events.filter(e=>e.day===td&&e.e>n).map(e=>({ev:e,s:e.s,e:e.e}))].sort((a,b)=>a.s-b.s||a.e-b.e);
+  const i0=items.findIndex(x=>x.t),cur=items[i0],nxt=i0>=0?items[i0+1]:items[0];
+  const loose=act.filter(t=>!t.block||t.block.e<=n),miss=p.unplaced.reduce((a,u)=>a+u.n,0);
+  const dn=S.tasks.filter(t=>!t.del&&t.st==='done'&&t.day===td).length,mains=act.filter(t=>t.main).slice(0,3);
+  const evs=S.events.filter(e=>e.day>=td).sort((a,b)=>a.day<b.day?-1:a.day>b.day?1:a.s-b.s).slice(0,10);
+  const ds=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+  return h('div',{},
+    h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Сегодня'),h('div',{class:'sub'},ds[0].toUpperCase()+ds.slice(1)))),
+    h('div',{class:'card hero'},h('h3',{},'Ваш день'),
+      h('p',{},'Свободно: '+dur(p.total),h('br'),'Запланировано: '+dur(p.planned),miss?[h('br'),h('b',{class:'warn'},'⚠ Не помещается: '+dur(miss))]:null),
+      h('div',{class:'progress'},h('span',{style:'width:'+(act.length+dn?dn/(act.length+dn)*100:0)+'%'})),
+      h('p',{},dn+' из '+(act.length+dn)+' задач выполнено'),
+      p.free.length?h('p',{class:'mu'},'Промежутки: '+p.free.map(g=>hm(g[0])+'–'+hm(g[1])).join(', ')):h('p',{class:'warn'},'Свободного времени не осталось.'),
+      miss?h('p',{class:'warn'},'Сегодня всё не помещается. Выберем главное.'):null,
+      h('button',{class:'pri blk',onclick:rebuild},'Перестроить день')),
+    S.undo&&h('div',{class:'card row'},h('span',{class:'mu grow'},S.undo.label),h('button',{onclick:undo},'Отменить')),
+    h('div',{class:'card'},h('h3',{},'Сейчас'),
+      cur?[h('div',{class:'ttl'},cur.t.title),h('div',{class:'mu'},hm(cur.s)+'–'+hm(cur.e)+' · '+dur(need(cur.t))+(cur.t.started?' · в работе':'')),
+        h('div',{class:'row'},h('button',{class:'pri',onclick:()=>focus(cur.t)},'Начать'),h('button',{onclick:()=>setSt(cur.t,'done')},'Готово'),h('button',{onclick:()=>postpone(cur.t)},'Отложить')),
+        cur.t.moves>=3&&h('button',{class:'lnk',onclick:()=>help(cur.t)},'Эта задача несколько раз переносилась. Что мешает начать?')]
+      :h('p',{class:'mu'},loose.length?'Задач без времени: '+loose.length+'. Нажмите «Перестроить день».':dn?'Всё сделано. День завершён.':'На сегодня задач нет. Добавьте дело кнопкой «+».')),
+    h('div',{class:'card'},h('h3',{},'Дальше'),h('p',{},nxt?hm(nxt.s)+' · '+(nxt.t?nxt.t.title:nxt.ev.title+' (фиксировано)'):'Больше ничего не запланировано')),
+    h('div',{class:'card'},h('h3',{},'Главное сегодня'),mains.length?mains.map(t=>h('div',{class:'task'},h('button',{'aria-label':'Готово: '+t.title,onclick:()=>setSt(t,'done')},'☐'),h('div',{class:'grow'},t.title))):h('p',{class:'mu'},'Отметьте до трёх главных дел в карточке задачи.')),
+    loose.length>0&&h('div',{class:'card'},h('h3',{},'Без времени'),...loose.map(t=>h('div',{class:'li'},t.title,h('div',{class:'mu'},meta(t))))),
+    h('div',{class:'card'},h('h3',{},'Остаток дня'),items.length?items.map(x=>h('div',{class:x.ev?'li fix':'li'},h('b',{},hm(x.s)+'–'+hm(x.e)+' '),x.ev?x.ev.title+' · фиксировано':x.t.title+' · гибкий план')):h('p',{class:'mu'},'Пока пусто')),
+    h('div',{class:'card'},h('div',{class:'statrow'},h('h3',{},'Проекты'),h('button',{class:'lnk',onclick:()=>{view='projects';render()}},'Открыть')),h('p',{class:'mu'},(S.projects||[]).length+' проектов')),
+     h('div',{class:'card'},h('h3',{},'Фиксированные события'),...evs.map(e=>h('div',{class:'task'},h('div',{class:'grow'},e.title,h('div',{class:'mu'},(e.day===td?'сегодня':dm(e.day))+' · '+hm(e.s)+'–'+hm(e.e))),h('button',{'aria-label':'Удалить событие '+e.title,onclick:()=>mut(x=>{x.events=x.events.filter(y=>y.id!==e.id)},'Событие удалено')},'Удал.'))),h('button',{class:'blk',onclick:addEvent},'+ Событие')));
+}
+
+const valid=o=>{const ok=o&&o.v===1&&Array.isArray(o.tasks)&&Array.isArray(o.events)&&o.set&&[o.set.s,o.set.e,o.set.gap].every(Number.isFinite)&&o.set.e>o.set.s&&o.tasks.every(t=>t&&typeof t.id==='string'&&typeof t.title==='string'&&Number.isFinite(t.ts)&&['active','wait','done','cancel'].includes(t.st))&&o.events.every(e=>e&&typeof e.id==='string'&&typeof e.title==='string'&&/^\d{4}-\d\d-\d\d$/.test(e.day)&&Number.isFinite(e.s)&&Number.isFinite(e.e)&&e.e>e.s);if(!ok)throw Error('bad')};
+
+function vSet(){
+  const s=S.set,A=h('input',{type:'time',value:hm(s.s),required:true}),B=h('input',{type:'time',value:hm(s.e),required:true}),G=h('input',{type:'number',min:0,max:60,step:5,value:s.gap});
+  const out=h('textarea',{rows:5,readonly:true,'aria-label':'Резервная копия'}),inp=h('textarea',{rows:5,placeholder:'Вставьте сюда копию (JSON)','aria-label':'Импорт копии'}),info=h('div',{class:'mu'});
+  const copy=()=>JSON.stringify({...S,undo:null});
+  const check=()=>{try{const o=JSON.parse(inp.value);valid(o);info.replaceChildren('Будет импортировано: задач — '+o.tasks.length+', событий — '+o.events.length+'. Текущие данные будут заменены. ',h('button',{class:'pri',onclick:()=>commit({...empty(),...o,projects:o.projects||[],goals:o.goals||[],sessions:o.sessions||[],undo:null},'Данные импортированы')},'Заменить'))}catch(e){info.textContent='Копия повреждена или не подходит. Ваши данные не изменены.'}};
+  return h('div',{},
+    h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Настройки'))),h('button',{class:'blk',onclick:()=>{view='projects';render()}},'Проекты →'),h('div',{class:'card'},h('h2',{},'Рабочий день'),h('label',{},'Начало',A),h('label',{},'Конец',B),h('label',{},'Перерыв между задачами, мин',G),
+      h('button',{class:'pri',onclick:()=>{if(!A.value||!B.value||pm(B.value)<=pm(A.value))return toast('Конец должен быть позже начала',true);mut(n=>{n.set={s:pm(A.value),e:pm(B.value),gap:Math.max(0,+G.value||0)}},'Настройки сохранены')}},'Сохранить')),
+    h('div',{class:'card'},h('h2',{},'Резервная копия'),
+      h('p',{class:'mu'},'Данные хранятся в этом браузере. Очистка данных сайта или потеря устройства может привести к их удалению. Сохраняйте резервную копию. Это не облачная синхронизация.'),
+      h('div',{class:'row'},h('button',{onclick:()=>{out.value=copy();out.select()}},'Показать копию'),h('button',{onclick:async()=>{out.value=copy();try{await navigator.clipboard.writeText(out.value);toast('Скопировано')}catch(e){out.select();toast('Скопируйте выделенный текст вручную')}}},'Копировать'),h('button',{onclick:()=>{const blob=new Blob([copy()],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='feit-planner-backup-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}},'Скачать файл')),
+      out,h('h3',{style:'margin-top:14px'},'Восстановить из копии'),inp,h('button',{class:'blk',onclick:check},'Проверить'),info));
+}
+
+
+/* ===== Дополнительные экраны и инструменты ===== */
+let calDay=today(),calMode='week',focusId=null,focusStart=null,focusAccum=0;
+const datePlus=(day,count)=>{const d=new Date(day+'T12:00:00');d.setDate(d.getDate()+count);return dstr(d)};
+const escList=(list,emptyText)=>list.length?list:[h('div',{class:'empty'},h('strong',{},'Пока пусто'),emptyText)];
+function addProject(){form('Новый проект',[['title','Название','text','',{required:true,maxlength:65}]],v=>{if(!v.title.trim())return'Введите название';return mut(n=>{n.projects??=[];n.projects.push({id:uid(),title:v.title.trim()})},'Проект создан')})}
+function addGoal(g){g=g||{};form(g.id?'Изменить цель':'Новая цель',[['title','Название','text',g.title||'',{required:true}],['target','Целевой результат','number',g.target||4,{min:1}],['value','Уже выполнено','number',g.value||0,{min:0}],['unit','Единица (ролики, книги...)','text',g.unit||'раз']],v=>{if(!v.title.trim())return'Введите название';return mut(n=>{n.goals??=[];const obj={id:g.id||uid(),title:v.title.trim(),target:Math.max(1,+v.target||1),value:Math.max(0,+v.value||0),unit:v.unit};if(g.id){const i=n.goals.findIndex(x=>x.id===g.id);n.goals[i]=obj}else n.goals.push(obj)},'Цель сохранена')})}
+function vGoals(){const goals=S.goals||[],done=S.tasks.filter(t=>t.st==='done'&&!t.del).length;
+ return h('div',{},h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Мои цели'))),
+ h('div',{class:'card hero'},h('div',{class:'eyebrow',style:'color:#e6eaff'},'ВАШ ПРОГРЕСС'),h('div',{class:'metric'},h('div',{},h('b',{},String(done)),'задач выполнено'),h('div',{},h('b',{},String((S.sessions||[]).reduce((a,b)=>a+b.minutes,0)),'минут фокуса')),h('p',{},'Важны результаты, а не количество галочек.')),
+ h('div',{class:'sectionhead'},h('h2',{},'Долгосрочные цели'),h('button',{class:'pri',onclick:()=>addGoal()},'+ Цель')),
+ ...escList(goals.map(g=>h('div',{class:'card'},h('div',{class:'statrow'},h('div',{},h('h3',{},g.title),h('div',{class:'mu'},g.value+' из '+g.target+' '+(g.unit||''))),h('button',{onclick:()=>addGoal(g)},'Изменить')),h('div',{class:'goalbar'},h('div',{style:'width:'+Math.min(100,100*g.value/g.target)+'%'})),h('div',{class:'row'},h('button',{onclick:()=>mut(n=>{n.goals.find(x=>x.id===g.id).value++},'Прогресс обновлён')},'+ 1 к результату'),h('button',{onclick:()=>{if(confirm('Удалить цель?'))mut(n=>{n.goals=n.goals.filter(x=>x.id!==g.id)},'Цель удалена')}},'Удалить'))))), 'Добавьте первую измеримую цель'));
+}
+function vProjects(){const ps=S.projects||[];return h('div',{},h('h1',{},'Проекты'),h('p',{class:'sub'},'Разделите большие задачи по направлениям.'),h('button',{class:'pri',onclick:addProject},'+ Новый проект'),h('div',{style:'height:16px'}),...escList(ps.map(p=>{const ts=S.tasks.filter(t=>!t.del&&t.project===p.title);return h('div',{class:'card'},h('div',{class:'statrow'},h('div',{},h('h2',{},p.title),h('div',{class:'mu'},ts.filter(t=>t.st==='done').length+' из '+ts.length+' завершено')),h('button',{onclick:()=>{view='tasks';flt='inbox';q='';render()}},'Задачи')),h('div',{class:'progress'},h('span',{style:'width:'+(ts.length?ts.filter(t=>t.st==='done').length/ts.length*100:0)+'%'})),h('div',{class:'row'},h('button',{onclick:()=>form('Название проекта',[['title','Название','text',p.title,{required:true}]],v=>mut(n=>{const a=n.projects.find(x=>x.id===p.id),prev=a.title;a.title=v.title.trim();n.tasks.filter(t=>t.project===prev).forEach(t=>t.project=a.title)},'Проект изменён'))},'Переименовать'),h('button',{onclick:()=>{if(confirm('Удалить проект? Задачи будут сохранены без проекта.'))mut(n=>{n.tasks.filter(t=>t.project===p.title).forEach(t=>t.project='');n.projects=n.projects.filter(x=>x.id!==p.id)},'Проект удалён')}},'Удалить')))}), 'Создайте первый проект'))}
+function vCalendar(){const weekstart=datePlus(calDay,-(new Date(calDay+'T12:00:00').getDay()+6)%7);const days=Array.from({length:7},(_,i)=>datePlus(weekstart,i));const ts=S.tasks.filter(t=>!t.del&&t.day===calDay),evs=S.events.filter(e=>e.day===calDay);
+ const entries=[...ts.filter(t=>t.block).map(t=>({time:t.block.s,end:t.block.e,title:t.title,fix:!!t.locked,task:t})),...evs.map(e=>({time:e.s,end:e.e,title:e.title,fix:true}))].sort((a,b)=>a.time-b.time);
+ return h('div',{},h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Календарь'))),
+ h('div',{class:'card'},h('div',{class:'statrow'},h('button',{onclick:()=>{calDay=datePlus(calDay,-7);render()}},'←'),h('b',{},new Date(calDay+'T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})),h('button',{onclick:()=>{calDay=datePlus(calDay,7);render()}},'→')),h('div',{class:'daygrid'},...days.map(d=>h('button',{class:'daycell'+(d===calDay?' active':''),onclick:()=>{calDay=d;render()}},h('small',{},new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'short'})),h('b',{},String(+d.slice(-2))),((S.tasks.some(t=>!t.del&&t.day===d)||S.events.some(e=>e.day===d)))?h('span',{class:'dot'}):null))),h('button',{class:'lnk',onclick:()=>{calDay=today();render()}},'Перейти к сегодня')),
+ h('div',{class:'sectionhead'},h('h2',{},new Date(calDay+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'})),h('button',{onclick:()=>addEvent()},'+ Событие')),
+ ...escList(entries.map(x=>h('div',{class:'eventline'},h('div',{class:'eventtime'},hm(x.time)),h('div',{class:'eventbody'+(x.fix?' fixed':'')},h('b',{},x.title),h('div',{class:'mu'},hm(x.time)+'–'+hm(x.end)+(x.fix?' · закреплено':' · задача')),x.task&&h('button',{class:'lnk',onclick:()=>editTask(x.task)},'Изменить')))), 'На выбранный день нет задач с временем'),
+ ts.filter(t=>!t.block).length>0&&h('div',{class:'card'},h('h3',{},'Без времени'),...ts.filter(t=>!t.block).map(t=>h('div',{class:'task'},h('div',{class:'grow'},t.title),h('button',{onclick:()=>editTask(t)},'Изменить')))));
+}
+function focus(t){focusId=t.id;const elapsed=()=>Math.floor(((focusStart?Date.now()-focusStart:0)+focusAccum)/1000);const draw=()=>{if(!dlg.open||focusId!==t.id)return;const sec=elapsed();const clock=dlg.querySelector('#focusclock');if(clock)clock.textContent=pad(Math.floor(sec/60))+':'+pad(sec%60)};
+ const finish=async(done)=>{const secs=elapsed();focusStart=null;focusAccum=0;focusId=null;await mut(n=>{n.sessions??=[];if(secs>=10)n.sessions.push({id:uid(),task:t.id,day:today(),minutes:Math.max(1,Math.round(secs/60))});if(done){const x=n.tasks.find(x=>x.id===t.id);if(x)x.st='done'}},done?'Задача выполнена':'Сессия сохранена');dlg.close()};
+ dlg.replaceChildren(h('div',{},h('div',{class:'eyebrow'},'РЕЖИМ ФОКУСА'),h('h2',{},t.title),h('div',{id:'focusclock',class:'focus-clock'},'00:00'),h('div',{class:'row'},h('button',{onclick:()=>{if(focusStart){focusAccum+=Date.now()-focusStart;focusStart=null}else focusStart=Date.now();draw()}},'Пауза / продолжить'),h('button',{onclick:()=>finish(false)},'Завершить'),h('button',{class:'pri',onclick:()=>finish(true)},'Готово'))));dlg.showModal();focusAccum=0;focusStart=Date.now();const timer=setInterval(()=>{if(!dlg.open||focusId!==t.id){clearInterval(timer);return}draw()},1000);
+}
+const V={today:vToday,calendar:vCalendar,tasks:vTasks,goals:vGoals,projects:vProjects,set:vSet};
+const app=h('main',{id:'app'},'Загрузка…');
+const nav=h('nav',{'aria-label':'Разделы'},...[['today','Сегодня','⌂'],['calendar','Календарь','▦'],['tasks','Задачи','☷'],['goals','Цели','◎'],['set','Ещё','⚙']].map(([k,l,ic])=>h('button',{'data-v':k,onclick:()=>{view=k;render();scrollTo(0,0)}},h('span',{style:'font-size:21px;line-height:1'},ic),l)));
+function render(){app.replaceChildren(V[view]());nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.v===view?'page':'false'))}
+document.body.append(app,nav,h('button',{class:'pri fab','aria-label':'Добавить задачу',onclick:()=>editTask()},'+'),dlg,tz);
+(async()=>{try{const o=await get('state');S=o&&o.v===1?{...empty(),...o,projects:o.projects||[],goals:o.goals||[],sessions:o.sessions||[]}:empty()}catch(e){S=empty();toast('Хранилище недоступно: данные не сохранятся',true)}render()})();
+setInterval(()=>{if(S&&view==='today'&&!dlg.open)render()},60000);
+document.addEventListener('visibilitychange',()=>{if(S&&!document.hidden&&view==='today'&&!dlg.open)render()});
+</script>
+<script>if("serviceWorker" in navigator && location.protocol.startsWith("http"))window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));</script>
+</body>
+</html>
