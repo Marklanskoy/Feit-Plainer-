@@ -1,0 +1,49 @@
+{
+  "scope": "Chromium DOM + memory-store test double; NOT real IndexedDB/PWA/Safari tests",
+  "results": [
+    {
+      "name": "UI: create, edit and complete a task",
+      "status": "pass"
+    },
+    {
+      "name": "UI: yesterday tasks remain visible in carryover filter",
+      "status": "pass"
+    },
+    {
+      "name": "UI: current event, not future task, occupies the hero",
+      "status": "pass"
+    },
+    {
+      "name": "UI: overdue planning, cancel, apply and undo",
+      "status": "pass"
+    },
+    {
+      "name": "UI: simulated write failure preserves draft and offers retry",
+      "status": "pass"
+    },
+    {
+      "name": "UI: daily repeating tasks generate 30 future instances",
+      "status": "pass"
+    },
+    {
+      "name": "UI: persistent-model timer, pause, close window, reopen, save",
+      "status": "pass"
+    },
+    {
+      "name": "UI: project button filters the correct project by ID",
+      "status": "pass"
+    },
+    {
+      "name": "UI: user task names render as text, not HTML",
+      "status": "pass"
+    },
+    {
+      "name": "UI: corrupted backup is rejected without replacement",
+      "status": "pass"
+    },
+    {
+      "name": "Visual: 320, 390, 768 and 1440 px; pages and task dialog do not overflow",
+      "status": "pass"
+    }
+  ]
+}

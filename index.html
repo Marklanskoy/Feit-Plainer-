@@ -1,279 +1,547 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Feit Planner — твой день под контролем</title>
-<meta name="theme-color" content="#4f6bff">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icon.svg" type="image/svg+xml">
-<style>
-:root{--bg:#f7f8fa;--card:#fff;--tx:#171a21;--mu:#737b8c;--ac:#4f6bff;--acx:#fff;--wr:#ce6e20;--bd:#e9ecf2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141a;--card:#1c1f27;--tx:#eceef2;--mu:#a3acbb;--ac:#8aa6ff;--acx:#10131a;--wr:#f5a35c;--bd:#2b2f3a}}
-:root[data-theme="dark"]{--bg:#12141a;--card:#1c1f27;--tx:#eceef2;--mu:#a3acbb;--ac:#8aa6ff;--acx:#10131a;--wr:#f5a35c;--bd:#2b2f3a}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:920px;margin:0 auto;padding:24px 22px 150px}
-h1{font-size:30px;letter-spacing:-1px;margin:0 0 8px}h2{font-size:20px;letter-spacing:-.4px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}p{margin:0 0 8px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px;margin:0 0 15px;box-shadow:0 5px 22px rgba(22,37,81,.035)}
-.mu{color:var(--mu);font-size:14px}.warn{color:var(--wr)}.ttl{font-weight:600}.dn{text-decoration:line-through;color:var(--mu)}
-button,input,select,textarea{font:inherit;color:inherit}
-button{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--bd);background:var(--card);cursor:pointer}
-button.pri{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
-button.lnk{border:0;background:none;color:var(--ac);padding:0;text-align:left;text-decoration:underline}
-button.blk{width:100%;margin:0 0 8px;text-align:left}
-input,select,textarea{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);display:block;margin-top:4px}
-label{display:block;margin:0 0 12px;font-size:14px;color:var(--mu)}
-label.ck{display:flex;gap:10px;align-items:center;color:var(--tx);font-size:16px}label.ck input{width:24px;min-height:24px;margin:0}
-.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1 1 90px}
-.task{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--bd)}.task:last-child{border:0}
-.task button{flex:none}.grow{flex:1;min-width:0;overflow-wrap:anywhere}
-.li{padding:6px 0 6px 10px;border-left:4px solid var(--ac);margin:0 0 8px;overflow-wrap:anywhere}.li.fix{border-left-color:var(--wr);border-left-style:double}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5;justify-content:center}
-nav button{flex:1;max-width:180px;border:0;border-radius:0;min-height:62px;background:none;font-size:12px;display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center}
-nav button[aria-current="page"]{color:var(--ac);font-weight:700;background:color-mix(in srgb,var(--ac) 7%,transparent)}
-.fab{position:fixed;z-index:6;right:20px;bottom:calc(72px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:28px;font-size:28px;padding:0;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-dialog{width:min(92vw,440px);max-height:88vh;max-height:88dvh;overflow:auto;border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);padding:18px}
-dialog::backdrop{background:rgba(0,0,0,.4)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .15s;max-width:90vw;z-index:9}
-.toast.show{opacity:1}.toast.bad{background:var(--wr);color:#fff}
-:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-.brand{display:flex;align-items:center;gap:11px;margin-bottom:24px}.brandmark{width:38px;height:38px;background:var(--ac);color:#fff;border-radius:13px;display:grid;place-items:center;font-weight:900;font-size:21px}.eyebrow{text-transform:uppercase;letter-spacing:1.7px;color:var(--mu);font-weight:700;font-size:10px}.sub{color:var(--mu);font-size:14px;margin-bottom:18px}.hero{background:linear-gradient(135deg,#4f6bff,#738aff);border:0;color:#fff}.hero .mu,.hero .warn{color:#e5e9ff}.hero button{background:#fff;color:#364fdd;border:0}.progress{height:8px;border-radius:8px;background:rgba(110,120,150,.16);overflow:hidden;margin:12px 0}.progress>span{display:block;height:100%;background:#4f6bff;border-radius:8px}.hero .progress{background:#ffffff40}.hero .progress>span{background:white}.metric{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0}.metric b{font-size:22px;display:block}.pill{display:inline-block;background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac);padding:5px 9px;border-radius:999px;font-size:12px;font-weight:650}.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:20px 0 12px}.sectionhead h2{margin:0}.mutedbox{background:var(--bg);border-radius:13px;padding:14px;margin-top:10px}.twocol{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}.daygrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.daycell{min-height:85px;padding:8px 4px;border:1px solid var(--bd);background:var(--card);border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:6px}.daycell.active{border:2px solid var(--ac);background:color-mix(in srgb,var(--ac) 7%,var(--card))}.daycell small{color:var(--mu);font-size:10px}.daycell b{font-size:17px}.dot{width:6px;height:6px;border-radius:50%;background:var(--ac);display:inline-block}.taskcheck{height:30px;min-height:30px;width:30px;padding:0;border-radius:50%;color:var(--ac);border:2px solid var(--bd)}.taskcheck.done{background:#24a477;border-color:#24a477;color:white}.seg{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}.seg button{min-height:36px;border-radius:10px}.seg .on{background:var(--ac);color:white;border-color:var(--ac)}.eventline{display:flex;gap:12px;margin:12px 0;align-items:stretch}.eventtime{width:58px;flex:none;color:var(--mu);font-size:12px;padding-top:12px}.eventbody{flex:1;padding:13px 14px;background:var(--bg);border-left:3px solid var(--ac);border-radius:10px}.eventbody.fixed{border-left-color:#f0aa4f}.statrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}.float-actions{display:flex;gap:8px}.float-actions button{min-height:34px;font-size:12px}.goalbar{height:7px;background:var(--bd);border-radius:10px;overflow:hidden;margin:12px 0}.goalbar div{height:100%;background:var(--ac);border-radius:10px}.focus-clock{text-align:center;font-variant-numeric:tabular-nums;font-size:60px;font-weight:750;letter-spacing:-3px;margin:25px 0}.empty{text-align:center;color:var(--mu);padding:26px 12px}.empty strong{display:block;color:var(--tx);font-size:17px;margin-bottom:4px}dialog{box-shadow:0 25px 100px #0003}dialog h2{margin-bottom:22px}button:disabled{opacity:.5;cursor:not-allowed}@media(max-width:650px){main{padding:15px 14px 155px}.twocol{grid-template-columns:1fr}.daycell{min-height:70px}.card{padding:17px}.metric{gap:14px}nav button{font-size:11px}.fab{right:16px}}@media(min-width:950px){main{padding-top:30px}.fab{right:calc(50% - 440px)}}
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Feit Planner — меньше шума, больше дел</title>
+<meta name="description" content="Реалистичный план дня, сохранение задач на устройстве и один понятный следующий шаг.">
+<meta name="theme-color" content="#4f63ed"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Feit Planner">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<style>:root{color-scheme:light;--bg:#f6f7fb;--surface:#fff;--surface-2:#f0f2f7;--text:#202333;--muted:#72798b;--line:#e7eaf1;--accent:#4f63ed;--accent-soft:#eef0ff;--accent-text:#4051cf;--success:#26856c;--success-soft:#eaf5f0;--warning:#98551b;--warning-soft:#fff3e4;--danger:#b44450;--danger-soft:#fceff1;--shadow:0 6px 30px #18234505;--r:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;line-height:1.5;font-size:16px}
+:root[data-theme=dark]{color-scheme:dark;--bg:#13151d;--surface:#1c1f29;--surface-2:#242836;--text:#eff0f7;--muted:#a2a9bd;--line:#303545;--accent:#97a4ff;--accent-soft:#29314e;--accent-text:#b3bdff;--success:#85d2b9;--success-soft:#203b32;--warning:#efbc89;--warning-soft:#3b2e23;--danger:#f7a7ae;--danger-soft:#3d2830;--shadow:none}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}button,a,input,textarea,select{-webkit-tap-highlight-color:transparent}a{color:var(--accent-text)}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}h1,h2,h3,p{margin:0}h1{font-size:34px;line-height:1.16;letter-spacing:-1.1px;font-weight:740}h2{font-size:20px;line-height:1.3;letter-spacing:-.4px}h3{font-size:15px;font-weight:650}p+p{margin-top:8px}svg{width:20px;height:20px;flex:none;vertical-align:middle;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}button svg{pointer-events:none}.hidden,[hidden]{display:none!important}.skip{position:fixed;top:-80px;left:20px;z-index:100}.skip:focus{top:10px;background:var(--surface);padding:12px}.app-shell{min-height:100vh;padding-left:228px}.sidebar{position:fixed;top:0;bottom:0;left:0;width:228px;background:var(--surface);border-right:1px solid var(--line);padding:30px 18px;display:flex;flex-direction:column;z-index:10}.brand{display:flex;align-items:center;gap:12px;color:var(--text);margin:0 12px 36px}.brand-logo{width:38px;height:38px;border-radius:13px;background:var(--accent);color:white;display:grid;place-items:center;font-weight:800;font-size:23px;letter-spacing:-2px;flex:none}.brand-name{font-size:18px;font-weight:730;letter-spacing:-.5px;line-height:1.2}.brand-caption{font-size:11px;color:var(--muted);letter-spacing:.7px;margin-top:3px}.side-links{display:grid;gap:6px}.nav-button{display:flex;align-items:center;gap:13px;border:0;background:transparent;color:var(--muted);width:100%;min-height:47px;border-radius:11px;padding:11px 15px;text-align:left;font-size:14px;font-weight:550}.nav-button[aria-current=page]{background:var(--accent-soft);color:var(--accent-text);font-weight:650}.nav-button:hover{background:var(--surface-2)}.nav-button[aria-current=page]:hover{background:var(--accent-soft)}.nav-button .count{margin-left:auto;color:var(--accent-text);background:var(--surface);border-radius:6px;padding:1px 7px;font-size:11px}.side-bottom{margin-top:auto;padding:22px 10px 0}.local-status{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}.status-dot{width:6px;height:6px;border-radius:50%;background:var(--success)}.status-dot.pending{background:var(--warning)}.side-bottom p{font-size:11px;color:var(--muted);margin-top:7px;max-width:165px}.version{font-size:10px;letter-spacing:1px;color:var(--muted);margin-top:16px}.main{max-width:1116px;margin:auto;padding:42px 46px 100px}.page-head{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:27px}.page-subtitle{font-size:14px;color:var(--muted);margin-top:7px}.head-actions{display:flex;align-items:center;gap:9px}.kicker{font-size:10px;line-height:1.3;letter-spacing:1.6px;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:8px}.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid var(--line);border-radius:11px;background:var(--surface);text-decoration:none;font-size:13px;font-weight:600;white-space:normal}.btn:hover{filter:brightness(.985)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.strong{background:var(--text);color:var(--surface);border-color:var(--text)}.btn.soft{background:var(--accent-soft);border-color:transparent;color:var(--accent-text)}.btn.ghost{background:none;border-color:transparent;color:var(--muted)}.btn.danger{color:var(--danger);background:var(--danger-soft);border-color:transparent}.btn.small{font-size:12px;padding:8px 12px}.btn.block{width:100%}.icon-button{width:44px;height:44px;min-height:44px;flex:none;padding:0;display:inline-grid;place-items:center;border-radius:11px;border:0;background:transparent;color:var(--muted)}.icon-button:hover{background:var(--surface-2)}.icon-button.danger{color:var(--danger)}.summary-strip{display:flex;align-items:center;gap:24px;padding:19px 24px;background:var(--surface);border:1px solid var(--line);border-radius:15px;margin-bottom:23px}.summary-strip .metric{flex:1;min-width:0}.metric:not(:first-child){border-left:1px solid var(--line);padding-left:24px}.metric b{font-size:21px;font-weight:700;letter-spacing:-.5px;display:block;line-height:1.3}.metric span{font-size:11px;color:var(--muted)}.day-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr);gap:24px;align-items:start}.column{min-width:0}.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:23px;margin-bottom:20px}.focus-card{border-color:color-mix(in srgb,var(--accent) 28%,var(--line));padding:28px;position:relative;overflow:hidden}.focus-card:before{content:"";width:3px;position:absolute;inset:27px auto 27px 0;background:var(--accent);border-radius:8px}.focus-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:22px}.focus-top .kicker{margin:0;color:var(--accent-text)}.tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;background:var(--surface-2);color:var(--muted);padding:4px 8px;border-radius:6px;max-width:100%;vertical-align:middle}.tag.accent{color:var(--accent-text);background:var(--accent-soft)}.tag.warn{color:var(--warning);background:var(--warning-soft)}.tag.good{color:var(--success);background:var(--success-soft)}.tag svg{width:12px;height:12px}.focus-title{font-size:26px;line-height:1.26;font-weight:680;letter-spacing:-.7px;overflow-wrap:anywhere;margin-bottom:12px}.focus-meta{color:var(--muted);font-size:12px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}.focus-description{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.65}.button-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.button-row>.btn.grow{flex:1}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 11px}.section-title h2{font-size:16px;font-weight:650}.section-title .btn{font-size:11px;min-height:36px;padding:6px 9px}.soft-link{border:0;background:none;color:var(--accent-text);font-size:12px;min-height:44px;padding:8px 0;text-align:left}.empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7}.empty .empty-icon{width:48px;height:48px;margin:0 auto 13px;border-radius:16px;background:var(--accent-soft);color:var(--accent-text);display:grid;place-items:center}.empty strong{display:block;font-size:16px;color:var(--text);font-weight:600;line-height:1.4;margin-bottom:6px}.empty .btn{margin-top:17px}.task-list{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}.task-row{display:flex;align-items:center;gap:5px;padding:11px 12px;position:relative;min-height:72px}.task-row+.task-row{border-top:1px solid var(--line)}.task-row .check{width:44px;height:44px;min-width:44px;display:grid;place-items:center;border:0;background:none;padding:0;border-radius:10px}.check-circle{width:21px;height:21px;border:1.6px solid #c5cada;border-radius:50%;display:grid;place-items:center;color:white}.check-circle svg{width:14px;height:14px}.task-row.completed .check-circle{background:var(--success);border-color:var(--success)}.task-row.completed .task-title{color:var(--muted);text-decoration:line-through}.task-main{flex:1;min-width:0}.task-title{background:none;border:0;padding:0;text-align:left;font-size:13px;font-weight:600;line-height:1.45;overflow-wrap:anywhere;display:block;min-height:25px;width:100%;color:var(--text)}.task-meta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:4px}.task-meta .deadline{color:var(--warning)}.task-estimate{font-size:10px;color:var(--muted);white-space:nowrap;padding:0 5px}.task-estimate svg{width:12px;height:12px;margin-right:3px}.task-row .star{color:var(--accent-text);width:12px;height:12px}.task-row .icon-button{width:36px;min-width:36px}.timeline-card{padding:22px}.timeline-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.timeline-heading h2{font-size:16px}.time-row{display:grid;grid-template-columns:43px minmax(0,1fr);gap:12px;padding-bottom:19px;position:relative}.time-row:last-child{padding-bottom:0}.time-label{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted);padding-top:2px}.time-content{position:relative;padding:0 0 0 13px;min-width:0;border-left:2px solid var(--accent)}.time-row.event .time-content{border-color:#c29d69}.time-row.break .time-content{border-color:var(--line);border-left-style:dashed}.time-row.completed{opacity:.65}.time-row .time-title{border:0;background:none;text-align:left;font-size:12px;font-weight:620;line-height:1.4;color:var(--text);padding:0;width:100%;overflow-wrap:anywhere;min-height:24px}.time-note{font-size:10px;color:var(--muted);margin-top:3px}.time-row.break .time-title{color:var(--muted);font-weight:400}.next-box{display:flex;gap:10px;border-top:1px solid var(--line);padding-top:16px;margin-top:24px;align-items:center}.next-box svg{color:var(--muted);width:17px;height:17px}.next-box b{font-size:12px;font-weight:550}.next-box span{font-size:10px;color:var(--muted);display:block;margin-bottom:2px}.notice{display:flex;align-items:flex-start;gap:10px;padding:15px 17px;border-radius:12px;background:var(--warning-soft);color:var(--warning);font-size:12px;line-height:1.6;margin:0 0 18px}.notice.neutral{background:var(--accent-soft);color:var(--accent-text)}.notice.success{background:var(--success-soft);color:var(--success)}.notice>svg{width:17px;height:17px;margin-top:2px}.notice .grow{flex:1;min-width:0}.notice b{font-weight:650}.notice .btn{background:transparent;color:inherit;border-color:currentColor}.notice .soft-link{color:inherit;font-weight:600}.attention-card{padding:18px;border:1px solid var(--line);background:var(--surface);border-radius:15px;margin-bottom:20px}.attention-card h3{font-size:13px;margin-bottom:6px}.attention-card p{font-size:12px;color:var(--muted)}.muted{color:var(--muted);font-size:12px;line-height:1.6}.fine{font-size:10px;color:var(--muted);line-height:1.6}.undo-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--success-soft);color:var(--success);font-size:12px;border-radius:12px;margin-bottom:18px;gap:12px}.undo-bar .btn{background:transparent;border-color:transparent;color:inherit;min-height:38px;font-size:12px;white-space:nowrap}.toolbar{display:flex;gap:12px;margin-bottom:13px}.search{display:flex;align-items:center;gap:10px;padding:0 15px;border:1px solid var(--line);border-radius:11px;background:var(--surface);flex:1}.search svg{width:17px;height:17px;color:var(--muted)}.search input{background:transparent;border:0!important;padding:12px 0!important;width:100%;min-width:0;font-size:13px;outline:0!important}.search:focus-within{outline:2px solid var(--accent);outline-offset:2px}.filters{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 20px}.chip{display:inline-flex;align-items:center;gap:6px;min-height:38px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:9px;padding:8px 11px;font-size:11px;font-weight:550}.chip[aria-pressed=true]{background:var(--accent-soft);color:var(--accent-text);border-color:transparent}.chip small{font-size:10px;opacity:.75}.list-caption{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin-bottom:12px}.subsection{margin-top:26px}.subsection h3{margin-bottom:12px}.form-field{display:block;margin-bottom:18px}.form-label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:7px}.input,select,textarea,input[type=date],input[type=time],input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.4}textarea{resize:vertical;min-height:86px}.input.title-input{font-size:20px;font-weight:620;letter-spacing:-.3px;min-height:58px}.input::placeholder,textarea::placeholder{color:var(--muted);font-weight:400}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.form-help{display:block;font-size:11px;color:var(--muted);line-height:1.6;margin-top:7px}.choice-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.choice-row .chip{min-height:34px;font-size:11px;padding:6px 10px}.check-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;font-weight:500;margin:12px 0;line-height:1.6}.check-label input{margin-top:3px;width:18px;height:18px;accent-color:var(--accent);flex:none}.field-check{display:flex;align-items:center;min-height:44px}.details{border-top:1px solid var(--line);margin-top:22px;padding-top:16px}.details summary{list-style:none;cursor:pointer;color:var(--accent-text);font-size:13px;font-weight:600;padding:8px 0;min-height:44px;display:flex;align-items:center;gap:9px}.details summary::-webkit-details-marker{display:none}.details summary svg{width:17px;height:17px}.details[open] summary{margin-bottom:14px}.dialog{border:1px solid var(--line);border-radius:22px;background:var(--surface);color:var(--text);width:min(570px,calc(100vw - 30px));max-height:90vh;max-height:90dvh;padding:0;box-shadow:0 30px 100px #0003;overflow:auto;overscroll-behavior:contain}.dialog.wide{width:min(680px,calc(100vw - 30px))}.dialog::backdrop{background:#10162866;backdrop-filter:blur(3px)}.modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:21px 24px 10px;position:sticky;top:0;background:var(--surface);z-index:2}.modal-top h2{font-size:19px}.modal-content{padding:13px 25px 24px;overflow-wrap:anywhere}.modal-footer{display:flex;gap:9px;justify-content:flex-end;padding:17px 24px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--surface);z-index:2}.modal-footer .btn{min-width:100px}.form-error{background:var(--danger-soft);color:var(--danger);padding:12px 14px;font-size:12px;border-radius:10px;margin-top:12px}.subtask-edit{display:flex;align-items:center;gap:7px;margin:7px 0}.subtask-edit input[type=checkbox]{width:18px;height:18px;flex:none;accent-color:var(--accent)}.subtask-edit input[type=text]{flex:1;min-width:0}.subtask-edit .icon-button{width:34px}.action-menu{display:grid;gap:5px}.menu-action{border:0;background:none;text-align:left;font-size:14px;padding:12px 14px;min-height:48px;border-radius:10px;display:flex;gap:11px;align-items:center}.menu-action:hover{background:var(--surface-2)}.menu-action.danger{color:var(--danger)}.menu-action svg{width:18px;height:18px;color:var(--muted)}.calendar-top{display:flex;align-items:center;gap:12px;margin-bottom:15px}.calendar-top h2{font-size:18px;flex:1;text-transform:capitalize}.calendar-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:16px 0 22px}.day-cell{border:1px solid var(--line);background:var(--surface);border-radius:13px;min-height:86px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;position:relative}.day-cell small{font-size:10px;color:var(--muted);text-transform:capitalize}.day-cell b{font-size:19px;font-weight:650}.day-cell[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:white}.day-cell[aria-pressed=true] small{color:#fff9}.day-cell.today:not([aria-pressed=true]){border-color:var(--accent)}.day-cell .day-dot{height:4px;width:4px;border-radius:50%;background:currentColor;opacity:.8}.day-cell .day-dot.empty-dot{opacity:0}.calendar-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:22px}.date-jump{width:auto!important;font-size:12px!important;min-height:40px!important;padding:8px!important}.goal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.goal-card{margin-bottom:0;min-width:0}.goal-card h2{font-size:18px;overflow-wrap:anywhere;margin-bottom:5px}.goal-number{font-size:31px;letter-spacing:-1px;font-weight:680;margin-top:19px}.goal-number small{font-size:15px;font-weight:400;color:var(--muted);letter-spacing:0}.progress-track{height:6px;border-radius:9px;background:var(--surface-2);overflow:hidden;margin:12px 0}.progress-fill{height:100%;border-radius:9px;background:var(--accent)}.goal-detail{font-size:11px;color:var(--muted);line-height:1.6}.goal-next{border-top:1px solid var(--line);padding-top:14px;margin-top:17px;font-size:12px}.goal-next .soft-link{display:block;font-size:12px;line-height:1.5}.project-color{height:30px;width:30px;border-radius:10px;background:var(--accent-soft);color:var(--accent-text);display:grid;place-items:center;margin-bottom:14px}.settings-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:22px}.setting-row{padding:14px 0;border-bottom:1px solid var(--line)}.setting-row:last-child{border:0}.setting-row .btn{margin-top:10px}.setting-row h3{font-size:13px;margin-bottom:5px}.week-setting{display:grid;grid-template-columns:55px 1fr 1fr;gap:10px;align-items:center;margin-bottom:10px}.week-setting .check-label{margin:0;font-size:12px}.week-setting input[type=time]{font-size:13px;padding:9px 6px}.plan-stat{display:flex;gap:20px;margin:12px 0 20px;padding:15px 17px;background:var(--surface-2);border-radius:12px}.plan-stat>div{flex:1}.plan-stat b{font-size:20px;display:block}.plan-stat span{font-size:10px;color:var(--muted)}.plan-item{padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin:9px 0;font-size:12px}.plan-item b{display:block;font-size:13px;line-height:1.5;overflow-wrap:anywhere}.plan-item .plan-time{color:var(--accent-text);font-variant-numeric:tabular-nums;font-size:11px;font-weight:650;margin-bottom:4px}.plan-item p{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}.plan-item.warn{border-color:color-mix(in srgb,var(--warning) 22%,var(--line))}.plan-item .check-label{font-size:11px;margin-top:10px;margin-bottom:2px}.plan-section{margin:22px 0 10px;font-size:13px}.focus-clock{text-align:center;font-size:66px;line-height:1.2;letter-spacing:-3px;font-weight:650;font-variant-numeric:tabular-nums;margin:32px 0 10px}.clock-caption{text-align:center;font-size:12px;color:var(--muted);margin-bottom:24px}.focus-modal-title{text-align:center;font-size:18px;line-height:1.4;padding:0 10px}.focus-status{text-align:center;margin-bottom:20px}.session-strip{position:fixed;bottom:20px;left:calc(50% + 80px);transform:translateX(-50%);z-index:15;background:var(--text);color:var(--surface);border-radius:14px;box-shadow:0 5px 30px #0002;max-width:min(500px,calc(100vw - 36px));padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:12px;cursor:pointer;border:0;min-height:48px}.session-strip .timer-text{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}.session-strip .strip-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}.session-strip svg{width:15px;height:15px}.toast{position:fixed;bottom:85px;left:calc(50% + 95px);transform:translateX(-50%);border-radius:11px;background:var(--text);color:var(--surface);padding:13px 18px;font-size:12px;max-width:min(500px,90vw);box-shadow:0 5px 25px #0002;z-index:100;pointer-events:none}.toast.error{background:var(--danger);color:#fff}.storage-banner{margin:0 0 20px;padding:15px 18px;border-radius:13px;background:var(--danger-soft);color:var(--danger);font-size:12px;line-height:1.6}.mobile-nav{display:none}.fab{position:fixed;right:30px;bottom:25px;z-index:20;width:54px;height:54px;border-radius:18px;border:0;background:var(--accent);color:#fff;box-shadow:0 6px 20px #4f63ed26;display:grid;place-items:center}.fab svg{width:24px;height:24px}.boot{max-width:420px;margin:13vh auto;padding:25px;text-align:center}.boot .brand-logo{margin:0 auto 18px}.boot h1{font-size:24px;margin-bottom:12px}.boot p{font-size:13px;color:var(--muted)}.boot .fallback{margin-top:20px;font-size:12px}.blank-padding{height:10px}.stat-table{display:grid;grid-template-columns:1fr auto;gap:15px;font-size:12px;color:var(--muted)}.stat-table b{font-size:13px;color:var(--text);font-weight:600;text-align:right}.project-filter{max-width:240px}.color-options{display:flex;gap:10px;flex-wrap:wrap}.swatch{height:38px;width:38px;border-radius:12px;border:2px solid transparent}.swatch[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:1150px){.main{padding:32px 28px 100px}.day-grid{gap:18px}.app-shell{padding-left:206px}.sidebar{width:206px;padding:28px 13px}.summary-strip{gap:16px}.metric:not(:first-child){padding-left:16px}.focus-card{padding:24px}.focus-title{font-size:23px}}
+@media(max-width:900px){.day-grid,.settings-grid{grid-template-columns:1fr}.day-grid>.column:nth-child(2){display:grid;grid-template-columns:1fr;gap:0}.goal-grid{grid-template-columns:1fr}.calendar-grid{grid-template-columns:1fr}.page-head{align-items:flex-start}.head-actions{gap:5px}.head-actions .btn{font-size:12px;padding:9px 12px}.main{padding:30px 24px 120px}.focus-title{font-size:25px}}
+@media(max-width:700px){.sidebar{display:none}.app-shell{padding-left:0}.main{padding:calc(23px + env(safe-area-inset-top,0px)) 18px calc(144px + env(safe-area-inset-bottom,0px))}.page-head{margin-bottom:20px;gap:10px}h1{font-size:29px;letter-spacing:-.9px}.page-subtitle{font-size:12px}.kicker{font-size:9px;margin-bottom:6px}.head-actions .btn{min-height:40px;font-size:11px;padding:9px 11px}.head-actions .btn svg{width:15px;height:15px}.summary-strip{gap:13px;padding:16px;margin-bottom:18px;border-radius:14px}.metric:not(:first-child){padding-left:13px}.metric b{font-size:19px}.metric span{font-size:9px}.focus-card{padding:24px 21px;margin-bottom:18px}.focus-card:before{inset:24px auto 24px 0}.focus-title{font-size:24px;letter-spacing:-.6px}.focus-top{margin-bottom:19px}.focus-meta{margin-bottom:21px;font-size:11px}.focus-card .btn{font-size:12px}.day-grid{gap:0}.card{padding:20px;border-radius:17px}.timeline-card{padding:21px}.mobile-nav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:5px 7px calc(5px + env(safe-area-inset-bottom,0px));gap:2px}.mobile-nav button{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;flex:1;min-width:0;min-height:53px;background:none;border:0;font-size:9px;color:var(--muted);padding:4px 0;border-radius:10px;font-weight:500}.mobile-nav button svg{width:20px;height:20px}.mobile-nav button[aria-current=page]{color:var(--accent-text);background:var(--accent-soft)}.fab{width:52px;height:52px;right:19px;bottom:calc(79px + env(safe-area-inset-bottom,0px));border-radius:17px}.toast{left:50%;bottom:calc(145px + env(safe-area-inset-bottom,0px));font-size:12px}.session-strip{left:15px;right:82px;bottom:calc(82px + env(safe-area-inset-bottom,0px));transform:none;max-width:none;padding:10px 12px;justify-content:space-between}.session-strip .strip-title{max-width:115px}.task-row{padding:10px 8px}.task-title{font-size:13px}.task-meta{font-size:10px}.task-estimate{font-size:9px;padding:0 1px}.task-estimate svg{display:none}.task-row .icon-button{width:32px;min-width:32px}.task-row .check{min-width:39px;width:39px}.toolbar{flex-wrap:wrap;gap:9px}.project-filter{width:100%;max-width:none;font-size:12px}.filters{gap:6px}.chip{padding:8px 10px;font-size:10px;min-height:36px}.list-caption{font-size:10px}.dialog{width:calc(100vw - 20px);max-height:94vh;max-height:94dvh;border-radius:20px}.modal-top{padding:17px 18px 8px}.modal-content{padding:13px 19px 20px}.modal-footer{padding:13px 18px calc(13px + env(safe-area-inset-bottom,0px))}.modal-footer .btn{min-width:0;flex:1}.input,select,textarea,input[type=date],input[type=time],input[type=datetime-local]{font-size:16px}.form-grid{gap:10px}.form-label{font-size:12px}.form-help{font-size:11px}.focus-clock{font-size:63px}.calendar-strip{gap:5px}.day-cell{min-height:75px;padding:8px 2px;border-radius:10px}.day-cell small{font-size:9px}.day-cell b{font-size:17px}.calendar-top{gap:4px}.calendar-top h2{font-size:16px}.date-jump{max-width:150px!important;font-size:13px!important}.calendar-top .icon-button{width:37px}.goal-grid{gap:15px}.page-subtitle{max-width:230px}.week-setting{grid-template-columns:46px 1fr 1fr;gap:8px}.week-setting input[type=time]{font-size:16px}.plan-stat{gap:12px;padding:13px}.plan-stat b{font-size:19px}}
+@media(max-width:350px){.main{padding-left:13px;padding-right:13px}.focus-title{font-size:22px}.head-actions .btn{padding:8px 9px}.summary-strip{padding:14px 12px;gap:9px}.metric:not(:first-child){padding-left:9px}.metric b{font-size:17px}.metric span{font-size:8px}.focus-card{padding:23px 18px}.form-grid{grid-template-columns:1fr}.task-estimate{display:none}.modal-content{padding:12px 16px}.day-cell b{font-size:16px}.day-cell small{font-size:8px}.session-strip .strip-title{max-width:88px}.calendar-top{flex-wrap:wrap}.date-jump{width:100%!important;max-width:none!important}}
+@media(prefers-reduced-motion:no-preference){button{transition:background .13s,color .13s,box-shadow .13s}.card{animation:reveal .2s ease-out}@keyframes reveal{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}}
+@media print{.sidebar,.mobile-nav,.fab,.head-actions,.session-strip,.toast{display:none!important}.app-shell{padding:0}.main{padding:10px;max-width:none}.card{box-shadow:none;break-inside:avoid}}
+.task-meta>svg{width:12px;height:12px}.task-row .icon-button{width:44px;min-width:44px}.task-row .check{width:44px;min-width:44px}
+@media(max-width:700px){.search input{font-size:16px}.chip,.choice-row .chip,.section-title .btn{min-height:44px}}
+.summary-strip .metric:nth-child(2){flex:1.4}.metric b{white-space:nowrap}.metric span{display:block;margin-top:3px;font-size:11px}
+@media(max-width:700px){.metric b{font-size:18px}.metric span{font-size:9px}}
+@media(max-width:350px){.metric b{font-size:16px}.metric span{font-size:8px}}
 </style>
-</head>
-<body>
-<script>
-"use strict";
-const h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a){const v=a[k];if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);else if(k==='class')e.className=v;else if(v!==false&&v!=null)e.setAttribute(k,v===true?'':v)}e.append(...c.flat().filter(x=>x!=null&&x!==false));return e};
-const pad=n=>String(n).padStart(2,'0'),hm=m=>pad(m/60|0)+':'+pad(m%60),pm=s=>{const[a,b]=s.split(':');return a*60+ +b};
-const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-const today=()=>dstr(new Date()),tom=()=>{const d=new Date();d.setDate(d.getDate()+1);return dstr(d)};
-const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
-const dur=m=>m>=60?(m/60|0)+' ч'+(m%60?' '+m%60+' мин':''):m+' мин';
-const dm=s=>s.split('-').reverse().slice(0,2).join('.'),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+</head><body>
+<a class="skip" href="#main">К содержимому</a>
+<div class="app-shell"><aside class="sidebar" id="sidebar" aria-label="Навигация"></aside><main class="main" id="main">
+<div class="boot"><div class="brand-logo">F</div><h1>Feit Planner</h1><p>Открываем ваши дела…</p><p class="fallback">На iPhone открывайте <strong>ссылку опубликованного сайта в Safari</strong>, а не HTML в просмотрщике файлов. Предпросмотр файла не запускает приложение.</p><noscript><p>Для работы нужен JavaScript. Откройте сайт в обычном браузере.</p></noscript></div>
+</main></div>
+<nav id="mobile-nav" class="mobile-nav" aria-label="Основные разделы"></nav>
+<button id="fab" class="fab" type="button" aria-label="Добавить задачу"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<button id="session-strip" class="session-strip" type="button" aria-label="Открыть текущую сессию" hidden></button>
+<dialog id="modal" class="dialog" aria-labelledby="dialog-title"></dialog><dialog id="confirm-dialog" class="dialog" aria-label="Подтверждение"></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script>/* Feit Planner 2.0.0 | build ceabf5630a65 */
+(()=>{
+'use strict';
+/** Feit Planner 2.0 — pure domain model. No DOM, network or database access. */
+const VERSION = '2.0.0';
+const DAY_MS = 86400000;
+const clone = value => structuredClone(value);
+const id = () => globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+const pad = n => String(n).padStart(2, '0');
+const dateKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const timeOf = (d = new Date()) => d.getHours()*60+d.getMinutes();
+const shiftDay = (day, count) => { const d = new Date(`${day}T12:00:00`); d.setDate(d.getDate()+count); return dateKey(d); };
+const fmtTime = min => `${pad(Math.floor(min/60))}:${pad(min%60)}`;
+const parseTime = value => { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value || '')) throw Error('Укажите корректное время'); return +value.slice(0,2)*60 + +value.slice(3,5); };
+const duration = m => m >= 60 ? `${Math.floor(m/60)} ч${m%60 ? ` ${Math.round(m%60)} мин` : ''}` : `${Math.round(m)} мин`;
+const isDay = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(+new Date(value+'T12:00:00')) && dateKey(new Date(value+'T12:00:00')) === value;
+const active = t => !t.del && t.st === 'active';
+const estimate = t => t.left != null ? t.left : t.min != null && t.min > 0 ? t.min : 30;
+const isOverdue = (t, day=dateKey(), now=timeOf()) => !!(active(t) && t.due && t.due < `${day}T${fmtTime(now)}`);
+const isCarry = (t, day=dateKey()) => active(t) && ((t.day && t.day<day) || ((!t.day || t.day<=day) && t.due && t.due.slice(0,10)<day));
+const isToday = (t, day=dateKey()) => active(t) && (t.day === day || ((!t.day || t.day<=day) && t.due?.slice(0,10)===day));
+const dayLabel = (day, base=dateKey()) => !day ? 'Без даты' : day===base ? 'Сегодня' : day===shiftDay(base,1) ? 'Завтра' : new Date(day+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short', ...(day.slice(0,4)!==base.slice(0,4)?{year:'numeric'}:{})});
+const integer = (v, lo, hi) => Number.isInteger(v) && v>=lo && v<=hi;
+const assert = (test, message) => { if(!test) throw Error(message); };
+const weekdays = () => Object.fromEntries(Array.from({length:7}, (_,i)=>[i, i===0||i===6?[]:[[540,1080]]]));
+const initialState = () => ({v:2,revision:0,tasks:[],events:[],projects:[],goals:[],sessions:[],series:[],buffers:[],activeSession:null,history:[],set:{days:weekdays(),lunch:null,gap:10,theme:'system'},migrationNotice:null});
 
-/* ===== Планировщик: чистая функция, без DOM и хранилища. Эвристика, не «оптимум» ===== */
-const need=t=>t.left||t.min||30;
-function planDay(tasks,events,set,now,td){
- const lo=Math.min(set.e,Math.max(set.s,now)),hi=set.e;
- const cand=tasks.filter(t=>!t.del&&t.st==='active'&&(t.day===td||(t.due&&t.due.slice(0,10)<=td)));
- const fixed=cand.filter(t=>t.locked&&t.block&&t.day===td&&t.block.e>lo);
- const occupied=[...events.filter(e=>e.day===td).map(e=>[e.s,e.e]),...fixed.map(t=>[t.block.s,t.block.e])].map(([a,b])=>[Math.max(a,lo),Math.min(b,hi)]).filter(([a,b])=>b>a).sort((a,b)=>a[0]-b[0]);
- const free=[];let at=lo;for(const [a,b] of occupied){if(a>at)free.push([at,a]);at=Math.max(at,b)}if(hi>at)free.push([at,hi]);
- const total=free.reduce((v,[a,b])=>v+b-a,0);
- const dl=t=>t.due&&t.due.slice(0,10)<=td?(t.due.slice(0,10)<td?lo:pm(t.due.slice(11,16))):Infinity;
- const movable=cand.filter(t=>!fixed.includes(t)).sort((a,b)=>dl(a)-dl(b)||(b.main|0)-(a.main|0)||(b.priority||0)-(a.priority||0)||a.ts-b.ts);
- const gaps=free.map(x=>x.slice()),placed=fixed.map(t=>({t,s:t.block.s,e:t.block.e})),unplaced=[];
- for(const t of movable){const n=need(t),deadline=dl(t);let idx=gaps.findIndex(g=>Math.min(g[1],deadline)-g[0]>=n);
-  if(idx>=0){const g=gaps[idx],s=g[0];placed.push({t,s,e:s+n});g[0]=Math.min(g[1],s+n+Math.max(0,set.gap||0));continue}
-  const available=gaps.reduce((a,g)=>a+Math.max(0,Math.min(g[1],deadline)-g[0]),0);
-  const maxgap=Math.max(0,...gaps.map(g=>Math.max(0,Math.min(g[1],deadline)-g[0])));
-  unplaced.push({t,n,why:deadline<Infinity?'Недостаточно непрерывного времени до срока: '+dur(maxgap)+' из '+dur(n):available<n?'Осталось '+dur(available)+', требуется '+dur(n):'Нет непрерывного интервала на '+dur(n)});
+/** Legacy field names are retained; old repeat settings require explicit activation. */
+function migrate(raw) {
+  if (raw == null) return initialState();
+  assert(raw && (raw.v === 1 || raw.v === 2), 'Эта версия резервной копии не поддерживается');
+  const s = clone(raw), legacy = s.v === 1;
+  for(const name of ['tasks','events']) assert(Array.isArray(s[name]), `В копии нет массива ${name}`);
+  for(const name of ['projects','goals','sessions','series','buffers','history']) { if(s[name] == null) s[name]=[]; assert(Array.isArray(s[name]),`Некорректное поле ${name}`); }
+  s.set ||= {};
+  if (legacy) {
+    const a = s.set.s ?? 540, b = s.set.e ?? 1080;
+    assert(integer(a,0,1439)&&integer(b,1,1440)&&b>a,'Некорректное рабочее время в старой копии');
+    s.set = {days:Object.fromEntries(Array.from({length:7},(_,i)=>[i,[[a,b]]])),lunch:null,gap:s.set.gap ?? 10,theme:'system'};
+    s.revision=0; s.activeSession=null; s.history=[];
+    const projectMap = new Map(s.projects.map(p=>[p.title,p.id]));
+    let pendingRepeats = 0;
+    s.tasks = s.tasks.map(t=>{
+      if(t.project && !projectMap.has(t.project)) { const p={id:`legacy-project-${projectMap.size}`,title:t.project}; s.projects.push(p); projectMap.set(p.title,p.id); }
+      if(t.repeat && t.repeat!=='none') pendingRepeats++;
+      return {...t,rev:0,left:t.left>0?t.left:null,min:t.min>0?t.min:null,day:t.day||null,due:t.due||'',projectId:projectMap.get(t.project)||null,goalId:null,countsForGoal:false,subtasks:[],repeat:'none',legacyRepeat:t.repeat&&t.repeat!=='none'?t.repeat:null,seriesId:null,block:t.block?{...t.block,day:t.day}:null,completedAt:t.completedAt||null};
+    });
+    s.sessions = s.sessions.map(x=>({...x,taskId:x.taskId||x.task,seconds:x.seconds??Math.round((x.minutes||0)*60),legacy:true}));
+    s.migrationNotice = {legacy:true,repeatCount:pendingRepeats};
+  }
+  s.v=2; s.revision ??=0; s.activeSession ??=null; s.migrationNotice ??=null;
+  for(const t of s.tasks) { t.rev ??=0; t.subtasks ??=[]; t.day ||=null; t.due ||= ''; t.projectId ||= null; t.goalId ||=null; t.left ??=null; t.min ??=null; }
+  validateState(s); return s;
+}
+function unique(list,label) { const seen=new Set(); for(const x of list){assert(x&&typeof x.id==='string'&&x.id.length>0,`Нет идентификатора: ${label}`);assert(!seen.has(x.id),`Повторяющийся идентификатор: ${label}`);seen.add(x.id);} }
+function validDue(v){ return !v || (typeof v==='string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v) && isDay(v.slice(0,10)) && /^([01]\d|2[0-3]):[0-5]\d$/.test(v.slice(11))); }
+function checkSlot(slot){ return Array.isArray(slot)&&slot.length===2&&integer(slot[0],0,1439)&&integer(slot[1],1,1440)&&slot[1]>slot[0]; }
+function validateState(s) {
+  assert(s.v===2&&integer(s.revision,0,Number.MAX_SAFE_INTEGER),'Некорректная версия данных');
+  for(const name of ['tasks','events','projects','goals','sessions','series','buffers','history']) assert(Array.isArray(s[name])&&s[name].length<=50000,`Некорректное поле ${name}`);
+  for(const name of ['tasks','events','projects','goals','sessions','series']) unique(s[name],name);
+  for(const t of s.tasks) {
+    assert(typeof t.title==='string'&&t.title.trim().length>0&&t.title.length<=2000,'Пустое или слишком длинное название задачи');
+    assert(['active','wait','done','cancel'].includes(t.st),'Некорректный статус задачи');
+    assert(t.description==null||typeof t.description==='string','Некорректное описание');
+    assert(t.priority==null||integer(t.priority,0,3),'Некорректный приоритет');
+    assert(!t.day||isDay(t.day),'Некорректная дата задачи'); assert(validDue(t.due),'Некорректный дедлайн');
+    assert(t.min==null||integer(t.min,1,1440),'Некорректная длительность задачи'); assert(t.left==null||integer(t.left,0,1440),'Некорректное оставшееся время');
+    assert(Number.isFinite(t.ts),'Некорректная дата создания');
+    assert(!t.block||(isDay(t.block.day)&&checkSlot([t.block.s,t.block.e])),'Некорректный временной блок');
+    assert(Array.isArray(t.subtasks)&&t.subtasks.every(x=>x&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.done==='boolean'),'Некорректные подзадачи');
+    assert(t.projectId==null||s.projects.some(p=>p.id===t.projectId),'Проект задачи не найден');
+    assert(t.goalId==null||s.goals.some(g=>g.id===t.goalId),'Цель задачи не найдена');
+  }
+  for(const e of s.events) assert(typeof e.title==='string'&&e.title.trim()&&isDay(e.day)&&checkSlot([e.s,e.e]),'Некорректное событие');
+  for(const p of s.projects) assert(typeof p.title==='string'&&p.title.trim(),'Некорректный проект');
+  for(const g of s.goals) assert(typeof g.title==='string'&&g.title.trim()&&Number.isFinite(g.target)&&g.target>0&&Number.isFinite(g.value)&&g.value>=0,'Некорректная цель');
+  for(const x of s.sessions) assert(Number.isFinite(x.seconds)&&x.seconds>=0&&isDay(x.day),'Некорректная сессия');
+  for(const r of s.series) {
+    assert(['daily','weekly','monthly'].includes(r.kind)&&isDay(r.nextDay)&&integer(r.anchorDay,1,31)&&r.template&&typeof r.template.title==='string'&&typeof r.enabled==='boolean','Некорректное повторение');
+    assert(!r.until||isDay(r.until),'Некорректная дата окончания повторения');
+  }
+  assert(s.set&&s.set.days&&integer(s.set.gap,0,120),'Некорректные настройки');
+  for(let d=0;d<7;d++) assert(Array.isArray(s.set.days[d])&&s.set.days[d].every(checkSlot),'Некорректное рабочее расписание');
+  assert(s.set.lunch==null||checkSlot(s.set.lunch),'Некорректный перерыв');
+  if(s.set.dayEnds)for(const [d,e] of Object.entries(s.set.dayEnds))assert(isDay(d)&&integer(e,0,1440),'Некорректное время окончания дня');
+  for(const b of s.buffers) assert(isDay(b.day)&&checkSlot([b.s,b.e])&&typeof b.taskId==='string','Некорректный перерыв задачи');
+  if(s.activeSession) assert(typeof s.activeSession.id==='string'&&s.tasks.some(t=>t.id===s.activeSession.taskId)&&Number.isFinite(s.activeSession.accumulatedMs)&&s.activeSession.accumulatedMs>=0&&(s.activeSession.startedAt===null||Number.isFinite(s.activeSession.startedAt)),'Некорректная активная сессия');
+  return s;
+}
+function parseBackup(text) {
+  assert(typeof text==='string'&&text.length<=15_000_000,'Файл слишком большой (максимум 15 МБ)');
+  let raw; try {raw=JSON.parse(text);} catch {throw Error('Не удалось прочитать JSON. Данные не изменены.');}
+  const inspect=(value,depth=0)=>{if(depth>60)throw Error('Слишком глубокая структура копии');if(value&&typeof value==='object')for(const [key,item]of Object.entries(value)){if(['__proto__','constructor','prototype'].includes(key))throw Error('Недопустимое служебное поле в копии');inspect(item,depth+1);}};inspect(raw);
+  const s=migrate(raw);s.history=[];s.activeSession=null;return s;
+}
+const exportState = s => JSON.stringify({...clone(s),history:[]},null,2);
+function touch(t, now=Date.now()){ t.rev=(t.rev||0)+1; t.updatedAt=now; }
+function mergeIntervals(intervals){const out=[];for(const [a,b] of intervals.filter(([a,b])=>b>a).map(x=>x.slice()).sort((x,y)=>x[0]-y[0]||x[1]-y[1])) {const p=out.at(-1);if(p&&a<=p[1])p[1]=Math.max(p[1],b);else out.push([a,b]);}return out;}
+function subtractIntervals(windows,occupied){const result=[];const busy=mergeIntervals(occupied);for(const [a,b] of mergeIntervals(windows)){let cursor=a;for(const [s,e] of busy){if(e<=cursor)continue;if(s>=b)break;if(s>cursor)result.push([cursor,Math.min(s,b)]);cursor=Math.max(cursor,e);if(cursor>=b)break;}if(cursor<b)result.push([cursor,b]);}return result;}
+const sumIntervals = xs => xs.reduce((n,[a,b])=>n+b-a,0);
+function workWindows(s,day,from=0,end=1440){const n=new Date(day+'T12:00:00').getDay();if(end===1440)end=s.set.dayEnds?.[day]??1440;return mergeIntervals((s.set.days[n]||[]).map(([a,b])=>[Math.max(a,from),Math.min(b,end)]).filter(([a,b])=>b>a));}
+function freeTime(s,day,from=0,{flex=false,end=1440}={}) {
+  const blocks=s.tasks.filter(t=>active(t)&&t.block?.day===day&&(flex||t.locked)).map(t=>[t.block.s,t.block.e]);
+  const occupied=[...s.events.filter(e=>e.day===day).map(e=>[e.s,e.e]),...blocks,...(s.set.lunch?[s.set.lunch]:[])];
+  if(flex) occupied.push(...s.buffers.filter(b=>b.day===day&&s.tasks.some(t=>t.id===b.taskId&&active(t)&&t.block?.day===day)).map(b=>[b.s,b.e]));
+  return subtractIntervals(workWindows(s,day,from,end),occupied);
+}
+function fixedConflicts(s,day,from){const xs=[...s.events.filter(e=>e.day===day&&e.e>from).map(e=>({id:e.id,title:e.title,s:e.s,e:e.e})),...s.tasks.filter(t=>active(t)&&t.locked&&t.block?.day===day&&t.block.e>from).map(t=>({id:t.id,title:t.title,s:t.block.s,e:t.block.e}))];const out=[];for(let i=0;i<xs.length;i++)for(let j=i+1;j<xs.length;j++)if(xs[i].s<xs[j].e&&xs[j].s<xs[i].e)out.push(`${xs[i].title} ↔ ${xs[j].title}`);return out;}
+/** Deterministic earliest-deadline heuristic. Does not claim a global optimum. */
+function planDay(s,{day=dateKey(),from=timeOf(),end=1440,includeCarry=false,remaining={}}={}) {
+  const tasks=s.tasks.map(t=>Object.hasOwn(remaining,t.id)?{...t,left:remaining[t.id]}:t);
+  const candidates=tasks.filter(t=>isToday(t,day)||(includeCarry&&isCarry(t,day)));
+  const fixed=candidates.filter(t=>t.locked&&t.block?.day===day&&t.block.e>from);
+  const free=freeTime(s,day,from,{end}),gaps=free.map(x=>x.slice());
+  const bound=t=>t.due?.slice(0,10)===day&&parseTime(t.due.slice(11))>=from?parseTime(t.due.slice(11)):Infinity;
+  const movable=candidates.filter(t=>!fixed.some(f=>f.id===t.id)).sort((a,b)=>(bound(a)-bound(b))||(Number(!!b.main)-Number(!!a.main))||((b.priority||0)-(a.priority||0))||(Number(isOverdue(b,day,from))-Number(isOverdue(a,day,from)))||a.ts-b.ts||a.id.localeCompare(b.id));
+  const placed=fixed.map(t=>({id:t.id,title:t.title,s:t.block.s,e:t.block.e,locked:true,assumed:false,late:isOverdue(t,day,from)})),unplaced=[],buffers=[];
+  for(const t of movable){
+    const n=estimate(t), deadline=bound(t);
+    if(t.locked&&t.block){unplaced.push({id:t.id,title:t.title,minutes:n,locked:true,reason:'Закреплённое время прошло или относится к другой дате. Измените его вручную.'});continue;}
+    if(n===0){unplaced.push({id:t.id,title:t.title,minutes:0,reason:'Осталось 0 минут: завершите задачу или уточните оценку.'});continue;}
+    const i=gaps.findIndex(([a,b])=>Math.min(b,deadline)-a>=n);
+    if(i<0){const available=sumIntervals(gaps.map(([a,b])=>[a,Math.max(a,Math.min(b,deadline))]));const largest=Math.max(0,...gaps.map(([a,b])=>Math.max(0,Math.min(b,deadline)-a)));unplaced.push({id:t.id,title:t.title,minutes:n,late:isOverdue(t,day,from),reason:deadline<Infinity?`До срока свободно ${duration(available)}. Самое длинное окно — ${duration(largest)}, нужно ${duration(n)}.`:available<n?`Свободно ${duration(available)}, нужно ${duration(n)}.`:`Нет цельного окна на ${duration(n)}. Самое длинное — ${duration(largest)}.`});continue;}
+    const [a,b]=gaps[i],endTask=a+n,endBreak=Math.min(b,endTask+s.set.gap);
+    placed.push({id:t.id,title:t.title,s:a,e:endTask,locked:false,assumed:t.min==null&&t.left==null,late:isOverdue(t,day,from)});
+    if(endBreak>endTask)buffers.push({id:`buffer-${t.id}`,taskId:t.id,day,s:endTask,e:endBreak});gaps[i][0]=endBreak;
+  }
+  return {day,from,end,revision:s.revision,placed:placed.sort((a,b)=>a.s-b.s),unplaced,buffers,free,capacity:sumIntervals(free),required:movable.reduce((n,t)=>n+estimate(t),0),remaining:clone(remaining),conflicts:fixedConflicts(s,day,from)};
+}
+function applyPlan(s,plan,transferIds=[]){
+  assert(s.revision===plan.revision,'Данные изменились. Пересчитайте и проверьте предложение ещё раз.');
+  assert(!plan.conflicts.length,'Сначала устраните пересечение закреплённых событий.');
+  const taskIds=new Set([...plan.placed,...plan.unplaced].map(x=>x.id));
+  s.buffers=s.buffers.filter(b=>!(b.day===plan.day&&taskIds.has(b.taskId)));
+  for(const x of plan.placed){const t=s.tasks.find(t=>t.id===x.id);assert(t&&active(t),'Задача изменилась');if(x.locked)continue;t.block={day:plan.day,s:x.s,e:x.e};if(t.day&&t.day!==plan.day)t.moves=(t.moves||0)+1;t.day=plan.day;if(Object.hasOwn(plan.remaining,t.id))t.left=plan.remaining[t.id];if(x.assumed){t.min=30;t.estimateSource='assumed';}touch(t);}
+  for(const x of plan.unplaced){const t=s.tasks.find(t=>t.id===x.id);if(t.locked)continue;t.block=null;if(Object.hasOwn(plan.remaining,t.id))t.left=plan.remaining[t.id];if(transferIds.includes(t.id)){assert(!t.due||t.due.slice(0,10)>plan.day,'Задачу с наступившим сроком нельзя незаметно отложить');t.day=shiftDay(plan.day,1);t.moves=(t.moves||0)+1;}touch(t);}
+  s.buffers.push(...plan.buffers);s.set.dayEnds??={};s.set.dayEnds[plan.day]=plan.end;
+}
+function timeline(s,day){return [...s.events.filter(e=>e.day===day).map(e=>({kind:'event',id:e.id,title:e.title,s:e.s,e:e.e,locked:true})),...s.tasks.filter(t=>!t.del&&t.st!=='cancel'&&t.st!=='wait'&&t.block?.day===day).map(t=>({kind:'task',id:t.id,title:t.title,s:t.block.s,e:t.block.e,locked:!!t.locked,done:t.st==='done'})),...s.buffers.filter(b=>b.day===day&&s.tasks.some(t=>t.id===b.taskId&&active(t)&&t.block?.day===day)).map(b=>({...b,kind:'break',title:'Перерыв'})),...(s.set.lunch?[{kind:'break',id:'lunch',s:s.set.lunch[0],e:s.set.lunch[1],title:'Перерыв'}]:[])].sort((a,b)=>a.s-b.s||a.e-b.e);}
+function currentContext(s,day=dateKey(),now=timeOf()) {
+  const line=timeline(s,day).filter(x=>!x.done&&x.e>now),current=line.filter(x=>x.s<=now&&now<x.e);
+  const event=current.find(x=>x.kind==='event');if(event)return {kind:'event',item:event,next:line.find(x=>x.s>=event.e&&x.kind!=='break')||null};
+  if(s.activeSession){const task=s.tasks.find(t=>t.id===s.activeSession.taskId);if(task&&active(task))return {kind:'focus',task,next:line.find(x=>x.s>now&&x.kind==='event')||null};}
+  const task=current.find(x=>x.kind==='task');if(task)return {kind:'task',task:s.tasks.find(t=>t.id===task.id),next:line.find(x=>x.s>=task.e&&x.kind!=='break')||null};
+  const rest=current.find(x=>x.kind==='break');if(rest)return {kind:'break',item:rest,next:line.find(x=>x.s>=rest.e&&x.kind!=='break')||null};
+  const next=line.find(x=>x.s>now&&x.kind!=='break')||null;
+  const gap=freeTime(s,day,now,{flex:true}).find(([a])=>a===now);
+  const candidate=gap&&s.tasks.filter(t=>isToday(t,day)&&!t.locked&&(!t.block||t.block.day!==day||t.block.e<=now)&&estimate(t)>0&&estimate(t)<=gap[1]-now).sort((a,b)=>Number(!!b.main)-Number(!!a.main)||(b.priority||0)-(a.priority||0)||a.ts-b.ts)[0];
+  return candidate?{kind:'suggestion',task:candidate,next}:{kind:'free',next,gap};
+}
+function nextOccurrence(day,kind,anchorDay){if(kind==='daily')return shiftDay(day,1);if(kind==='weekly')return shiftDay(day,7);const d=new Date(day+'T12:00:00');const last=new Date(d.getFullYear(),d.getMonth()+2,0,12).getDate();return dateKey(new Date(d.getFullYear(),d.getMonth()+1,Math.min(anchorDay,last),12));}
+function ensureOccurrences(s,today=dateKey()) {
+  const end=shiftDay(today,30);let count=0;
+  for(const r of s.series){if(!r.enabled)continue;let guard=0;while(r.nextDay<=end&&(!r.until||r.nextDay<=r.until)){
+    if(++guard>3000)throw Error('Слишком большой период повторений. Укажите более позднюю дату начала.');
+    const day=r.nextDay,tid=`repeat:${r.id}:${day}`;
+    if(!s.tasks.some(t=>t.id===tid)){s.tasks.push({...clone(r.template),id:tid,rev:0,ts:Date.now()+count,st:'active',day,due:'',block:null,left:null,moves:0,started:false,del:0,main:false,repeat:r.kind,seriesId:r.id,occurrenceDay:day,subtasks:(r.template.subtasks||[]).map(x=>({...x,done:false})),completedAt:null});count++;}
+    r.nextDay=nextOccurrence(day,r.kind,r.anchorDay);
+  }}return count;
+}
+function saveTask(s,draft,{taskId=null,expectedRev=null,now=Date.now()}={}) {
+  const existing=taskId?s.tasks.find(t=>t.id===taskId):null;
+  if(taskId){assert(existing,'Задача больше не существует');assert(existing.rev===expectedRev,'Задачу изменили в другой вкладке. Закройте форму и откройте её заново.');}
+  assert(draft.title?.trim(),'Введите название задачи');assert(!draft.day||isDay(draft.day),'Выберите корректную дату');assert(validDue(draft.due),'Укажите корректный дедлайн');
+  assert(!draft.main||!!draft.day,'Сначала выберите день для главной задачи');
+  if(draft.main)assert(s.tasks.filter(t=>active(t)&&t.day===draft.day&&t.main&&t.id!==taskId).length<3,'На день можно выбрать до трёх главных дел');
+  if(draft.block){assert(draft.day,'Для времени выполнения нужен день');assert(checkSlot([draft.block.s,draft.block.e]),'Некорректное время выполнения');const clashes=[...s.events.filter(e=>e.day===draft.day),...s.tasks.filter(t=>active(t)&&t.id!==taskId&&t.block?.day===draft.day).map(t=>({...t.block,title:t.title}))].filter(x=>x.s<draft.block.e&&draft.block.s<x.e);assert(!clashes.length,`Пересечение с «${clashes[0]?.title}». Измените время.`);}
+  const changedDay=existing&&existing.day!==draft.day;
+  const t={...(existing||{id:id(),ts:now,rev:0,st:'active',moves:0,del:0,completedAt:null}),...clone(draft),title:draft.title.trim(),day:draft.day||null,due:draft.due||'',left:existing&&existing.min===draft.min?existing.left:null};
+  if(changedDay)t.moves=(t.moves||0)+1;
+  if(t.block)t.block.day=t.day;
+  if(existing&&s.activeSession?.taskId===existing.id&&changedDay)throw Error('Сначала завершите или остановите активную сессию этой задачи');
+  if(t.repeat&&t.repeat!=='none'&&!existing?.seriesId){assert(t.day,'Для повторения выберите первый день');const sid=id();const series={id:sid,kind:t.repeat,anchorDay:+t.day.slice(-2),nextDay:nextOccurrence(t.day,t.repeat,+t.day.slice(-2)),enabled:true,until:null,template:{title:t.title,min:t.min,description:t.description||'',projectId:t.projectId||null,goalId:t.goalId||null,countsForGoal:!!t.countsForGoal,priority:t.priority||0,subtasks:clone(t.subtasks||[]),locked:false}};t.seriesId=sid;t.occurrenceDay=t.day;s.series.push(series);}
+  if(existing?.seriesId){t.seriesId=existing.seriesId;t.repeat=existing.repeat;}
+  touch(t,now);if(existing)s.tasks[s.tasks.indexOf(existing)]=t;else s.tasks.push(t);
+  s.buffers=s.buffers.filter(b=>b.taskId!==t.id);
+  ensureOccurrences(s);return t.id;
+}
+function setTaskStatus(s,taskId,st,now=Date.now()) {const t=s.tasks.find(t=>t.id===taskId);assert(t,'Задача не найдена');assert(['active','wait','done','cancel'].includes(st),'Некорректный статус');if(s.activeSession?.taskId===taskId)endFocus(s,s.activeSession.id,st==='done',now);t.st=st;t.completedAt=st==='done'?new Date(now).toISOString():null;if(st==='wait'||st==='cancel')t.block=null;touch(t,now);s.buffers=s.buffers.filter(b=>b.taskId!==taskId);}
+function sessionMilliseconds(session,now=Date.now()){return session?session.accumulatedMs+(session.startedAt!=null?Math.max(0,now-session.startedAt):0):0;}
+function startFocus(s,taskId,now=Date.now()) {assert(!s.activeSession,'Уже идёт другая сессия. Завершите её перед началом новой.');const t=s.tasks.find(t=>t.id===taskId);assert(t&&active(t),'Эту задачу нельзя начать');t.started=true;touch(t,now);s.activeSession={id:id(),taskId,startedAt:now,accumulatedMs:0,day:dateKey(new Date(now)),createdAt:now};}
+function pauseFocus(s,sessionId,now=Date.now()){const x=s.activeSession;assert(x&&x.id===sessionId,'Сессия изменилась в другой вкладке');if(x.startedAt!=null){x.accumulatedMs=sessionMilliseconds(x,now);x.startedAt=null;}else x.startedAt=now;}
+function endFocus(s,sessionId,done=false,now=Date.now()) {const x=s.activeSession;assert(x&&x.id===sessionId,'Сессия уже завершена');const seconds=Math.floor(sessionMilliseconds(x,now)/1000);s.sessions.push({id:x.id,taskId:x.taskId,day:x.day,startedAt:x.createdAt,endedAt:now,seconds});if(done){const t=s.tasks.find(t=>t.id===x.taskId);if(t){t.st='done';t.completedAt=new Date(now).toISOString();touch(t,now);s.buffers=s.buffers.filter(b=>b.taskId!==t.id);}}s.activeSession=null;}
+function goalProgress(s,g){const linked=s.tasks.filter(t=>!t.del&&t.st==='done'&&t.goalId===g.id&&t.countsForGoal).length;return {value:g.value+linked,target:g.target,manual:g.value,linked};}
+
+/** Field-level undo rejects conflicts; unrelated newer edits are preserved. */
+const ENTITY_KEYS=['tasks','events','projects','goals','series','buffers'];
+const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+function recordHistory(before,after,label){
+  const changes=[];
+  for(const collection of ENTITY_KEYS){const ids=new Set([...before[collection],...after[collection]].map(x=>x.id));for(const entityId of ids){const a=before[collection].find(x=>x.id===entityId),b=after[collection].find(x=>x.id===entityId);if(!a||!b){if(!eq(a,b))changes.push({collection,id:entityId,whole:true,before:a||null,after:b||null});continue;}for(const k of new Set([...Object.keys(a),...Object.keys(b)])){if(['rev','updatedAt'].includes(k))continue;if(!eq(a[k],b[k]))changes.push({collection,id:entityId,key:k,before:a[k]??null,after:b[k]??null});}}}
+  if(!eq(before.set,after.set))changes.push({collection:'set',whole:true,before:clone(before.set),after:clone(after.set)});
+  if(changes.length)after.history=[...(after.history||[]),{id:id(),label,ts:Date.now(),changes}].slice(-15);
+}
+function undoHistory(s,operationId){const op=s.history.find(x=>x.id===operationId);assert(op,'Отмена уже недоступна');
+  for(const c of op.changes){const current=c.collection==='set'?s.set:s[c.collection].find(x=>x.id===c.id)||null;const actual=c.whole?current:current?.[c.key]??null;const expected=c.after;if(c.whole&&actual&&expected&&c.collection!=='set'){const a=clone(actual),b=clone(expected);delete a.rev;delete a.updatedAt;delete b.rev;delete b.updatedAt;assert(eq(a,b),'После этой операции данные изменились. Отмена не затронет новые изменения.');}else assert(eq(actual,expected),'После этой операции данные изменились. Отмена не затронет новые изменения.');}
+  for(const c of [...op.changes].reverse()){if(c.collection==='set'){s.set=clone(c.before);continue;}const list=s[c.collection],at=list.findIndex(x=>x.id===c.id);if(c.whole){if(c.before==null){if(at>=0)list.splice(at,1);}else if(at>=0)list[at]=clone(c.before);else list.push(clone(c.before));}else{list[at][c.key]=clone(c.before);if(c.collection==='tasks')touch(list[at]);}}
+  s.history=s.history.filter(x=>x.id!==operationId);validateState(s);
+}
+
+
+
+/** All mutations read AND write inside ONE readwrite transaction.
+ * IndexedDB serializes these transactions across same-origin tabs as well.
+ * UI state changes only on transaction.oncomplete, never on request.onsuccess.
+ */
+class PlannerStore {
+  constructor({name='ritm',version=2}={}) {
+    this.name=name; this.version=version; this.db=null; this.state=null;
+    this.queue=Promise.resolve(); this.pending=0; this.listeners=new Set(); this.lastError=null;
+    this.channel=null;try{if(typeof BroadcastChannel!=='undefined')this.channel=new BroadcastChannel(`feit:${name}:v2`);}catch{/* Visibility refresh is the fallback when channels are blocked. */}
+    if(this.channel)this.channel.onmessage=()=>{this.refresh().catch(()=>{});};
+  }
+  subscribe(listener){this.listeners.add(listener);return()=>this.listeners.delete(listener);}
+  emit(){for(const listener of this.listeners)listener(this.state,{pending:this.pending,error:this.lastError});}
+  async open(){
+    if(this.db)return this.db;
+    return new Promise((resolve,reject)=>{
+      let settled=false;
+      const req=indexedDB.open(this.name,this.version);
+      req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('kv'))req.result.createObjectStore('kv');};
+      req.onblocked=()=>{settled=true;reject(Error('Закройте старые вкладки Feit Planner и повторите загрузку. Это нужно для безопасного обновления базы.'));};
+      req.onerror=()=>reject(req.error||Error('Хранилище недоступно'));
+      req.onsuccess=()=>{if(settled){req.result.close();return;}this.db=req.result;this.db.onversionchange=()=>{this.db.close();this.db=null;this.lastError='Версия приложения изменилась. Закройте формы и обновите страницу.';this.emit();};resolve(this.db);};
+    });
+  }
+  async init(){await this.open();return this.update(s=>{ensureOccurrences(s);},{label:null});}
+  update(mutator,{label=null,expectedRevision=null,backup=false}={}){
+    this.pending++;this.emit();
+    const task=this.queue.catch(()=>{}).then(()=>this.transaction(mutator,{label,expectedRevision,backup}));
+    this.queue=task;
+    return task.then(state=>{this.lastError=null;return state;}).catch(err=>{this.lastError=err?.message||'Не удалось сохранить';throw err;}).finally(()=>{this.pending--;this.emit();});
+  }
+  async transaction(mutator,{label,expectedRevision,backup}){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      let next=null, failure=null,changed=false;
+      let tx;try{tx=db.transaction('kv','readwrite');}catch(err){reject(err);return;}
+      const kv=tx.objectStore('kv'),req=kv.get('state');
+      req.onsuccess=()=>{
+        try{
+          const raw=req.result,before=migrate(raw);
+          if(expectedRevision!=null&&before.revision!==expectedRevision)throw Error('Данные изменились. Пересчитайте и проверьте предложение ещё раз.');
+          next=clone(before);mutator(next,before);
+          if(label)recordHistory(before,next,label);
+          changed=!raw||raw.v!==2||JSON.stringify(before)!==JSON.stringify(next);
+          if(!changed)return;
+          next.revision=before.revision+1;validateState(next);
+          if(raw?.v===1)kv.put(raw,'legacy-v1-backup');
+          if(backup&&raw)kv.put(raw,'before-import-backup');
+          kv.put(next,'state');
+        }catch(err){failure=err;try{tx.abort();}catch{} }
+      };
+      tx.oncomplete=()=>{if(next&&(!this.state||next.revision>=this.state.revision))this.state=next;this.lastError=null;this.emit();if(changed)this.channel?.postMessage({revision:next.revision});resolve(clone(this.state));};
+      tx.onabort=tx.onerror=()=>reject(failure||tx.error||Error('Не удалось сохранить данные. Изменение не применено.'));
+    });
+  }
+  async refresh(){
+    const db=await this.open();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction('kv','readonly'),req=tx.objectStore('kv').get('state');
+      req.onsuccess=()=>{try{const next=migrate(req.result);if(!this.state||next.revision>this.state.revision){this.state=next;this.emit();}resolve(clone(this.state));}catch(err){this.lastError=err.message;this.emit();reject(err);}};
+      req.onerror=()=>reject(req.error);
+    });
+  }
+  async rawBackup(key='state'){
+    const db=await this.open();return new Promise((resolve,reject)=>{const req=db.transaction('kv','readonly').objectStore('kv').get(key);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});
+  }
+  async replace(imported,expectedRevision){return this.update(s=>{const revision=s.revision;for(const k of Object.keys(s))delete s[k];Object.assign(s,clone(imported),{revision,history:[],activeSession:null});ensureOccurrences(s);},{expectedRevision,backup:true});}
+  async tick(){if(this.state&&this.state.series.some(r=>r.enabled&&r.nextDay<=dateKey()))await this.update(s=>ensureOccurrences(s));else await this.refresh();}
+  close(){this.db?.close();this.db=null;this.channel?.close();}
+}
+
+
+
+
+const ICONS={
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h.01m4 0h.01m4 0h.01"/>',
+ tasks:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="m8 9 1 1 2-2m2 1h3m-8 6 1 1 2-2m2 1h3"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+ more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+ folder:'<path d="M3 7V5a2 2 0 0 1 2-2h4l3 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ play:'<path d="m8 4 12 8-12 8Z"/>',
+ pause:'<path d="M8 5v14M16 5v14"/>',
+ check:'<path d="m5 12 4 4L19 6"/>',
+ close:'<path d="m6 6 12 12M6 18 18 6"/>',
+ refresh:'<path d="M20 7a8 8 0 0 0-13-2L3 9m0-6v6h6M4 17a8 8 0 0 0 13 2l4-4m0 6v-6h-6"/>',
+ arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',
+ left:'<path d="m14 6-6 6 6 6"/>',
+ right:'<path d="m10 6 6 6-6 6"/>',
+ star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/>',
+ search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+ alert:'<path d="m10.3 3.6-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3.4l-8-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 4h.01"/>',
+ lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/>',
+ edit:'<path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14v6Z"/>',
+ trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>',
+ download:'<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>',
+ upload:'<path d="M12 16V4m-5 5 5-5 5 5M4 17v4h16v-4"/>',
+ inbox:'<path d="m3 13 3-9h12l3 9v7H3Z"/><path d="M3 13h5l2 3h4l2-3h5"/>',
+ shield:'<path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8 12 3 3 5-6"/>',
+ coffee:'<path d="M4 8h12v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Zm12 1h2a3 3 0 0 1 0 6h-2M7 2v3m5-3v3M3 22h15"/>',
+ sliders:'<path d="M4 6h7m4 0h5M4 12h2m4 0h10M4 18h10m4 0h2"/><circle cx="13" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/>',
+ undo:'<path d="M3 10h10a7 7 0 0 1 0 14M3 10l5-5m-5 5 5 5" transform="translate(0 -3)"/>',
+ minimize:'<path d="M9 3v6H3m18 6h-6v6"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>',
+ phone:'<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/>',
+ chart:'<path d="M4 3v18h17M8 15v3m5-9v9m5-14v14"/>'
+};
+function glyph(name){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');s.innerHTML=ICONS[name]||ICONS.tasks;return s;}
+function el(tag,attrs={},...children){const e=document.createElement(tag);for(const child of children.flat(Infinity)){if(child!=null&&child!==false)e.append(child instanceof Node?child:document.createTextNode(String(child)));}for(const [k,v] of Object.entries(attrs)){if(v===null||v===undefined)continue;if(k.startsWith('on'))e.addEventListener(k.slice(2).toLowerCase(),v);else if(k==='class')e.className=v;else if(['value','checked','disabled','hidden','selected','open','readOnly'].includes(k))e[k]=v;else if(k==='style'&&typeof v==='object')Object.assign(e.style,v);else if(v!==false)e.setAttribute(k,v===true?'':String(v));}return e;}
+const button=(text,fn,kind='',icon=null)=>el('button',{type:'button',class:`btn ${kind}`,onclick:fn},icon&&glyph(icon),text);
+const iconButton=(name,label,fn,kind='')=>el('button',{type:'button',class:`icon-button ${kind}`,'aria-label':label,title:label,onclick:fn},glyph(name));
+const pill=(text,kind='',icon=null)=>el('span',{class:`tag ${kind}`},icon&&glyph(icon),text);
+const field=(label,input,help='')=>el('label',{class:'form-field'},el('span',{class:'form-label'},label),input,help&&el('span',{class:'form-help'},help));
+const checkLabel=(text,input)=>el('label',{class:'check-label'},input,text);
+const select=(options,value,attrs={})=>el('select',{...attrs,value},options.map(([v,t])=>el('option',{value:v},t)));
+const input=(type,value,attrs={})=>el('input',{class:'input',type,value:value??'',...attrs});
+const emptyView=(title,text,action=null,icon='inbox')=>el('div',{class:'empty'},el('div',{class:'empty-icon'},glyph(icon)),el('strong',{},title),el('div',{},text),action);
+const appStore=new PlannerStore();
+let S=null,view='today',taskFilter='all',searchText='',projectFilter='',calDay=dateKey(),lastDay=dateKey(),lastRevision=-1;
+const main=document.getElementById('main'),sidebar=document.getElementById('sidebar'),mobileNav=document.getElementById('mobile-nav');
+const modal=document.getElementById('modal'),confirmDialog=document.getElementById('confirm-dialog');
+let modalState=null,toastTimer=null,workerRegistration=null,installPrompt=null;
+function toast(message,error=false){const e=document.getElementById('toast');e.className=`toast${error?' error':''}`;e.textContent=message;e.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.hidden=true,error?5500:3000);}
+function downloadText(text,name){const blob=new Blob([text],{type:'application/json'}),url=URL.createObjectURL(blob);const a=el('a',{href:url,download:name});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+async function action(fn,{label=null,message='Сохранено',expectedRevision=null,backup=false}={}){try{await appStore.update(fn,{label,expectedRevision,backup});if(message)toast(message);return true;}catch(e){if(modalState?.error){modalState.error.textContent=e.message;modalState.error.hidden=false;}toast(e.message||'Не удалось сохранить',true);return false;}}
+function route(next){view=next;render();window.scrollTo({top:0,behavior:'instant'});}
+function head(title,subtitle,actions=[]){return el('header',{class:'page-head'},el('div',{},el('div',{class:'kicker'},'FEIT PLANNER'),el('h1',{},title),subtitle&&el('p',{class:'page-subtitle'},subtitle)),actions.length?el('div',{class:'head-actions'},actions):null);}
+function ask(title,text,accept='Подтвердить',{danger=false}={}){return new Promise(resolve=>{const close=value=>{confirmDialog.close();confirmDialog.replaceChildren();resolve(value);};const cancel=e=>{e.preventDefault();close(false);};confirmDialog.oncancel=cancel;confirmDialog.replaceChildren(el('div',{class:'modal-top'},el('h2',{},title)),el('div',{class:'modal-content'},el('p',{class:'muted'},text)),el('div',{class:'modal-footer'},button('Отмена',()=>close(false)),button(accept,()=>close(true),danger?'danger':'primary')));confirmDialog.showModal();});}
+async function closeModal(force=false){if(!force&&modalState?.dirty){const discard=await ask('Закрыть без сохранения?','Введённые изменения ещё не сохранены.','Закрыть',{danger:true});if(!discard)return;}modal.close();modal.replaceChildren();modalState=null;}
+function openModal(title,content,{wide=false,onSave=null,saveText='Сохранить',type='form',extraFooter=[]}={}){
+  const err=el('div',{class:'form-error',role:'alert',hidden:true});
+  const state={dirty:false,error:err,type,onSave};modalState=state;modal.className=`dialog${wide?' wide':''}`;
+  const form=el('form',{}),body=el('div',{class:'modal-content'},content,err);
+  const saveBtn=onSave?el('button',{type:'submit',class:'btn primary'},saveText):null;
+  form.append(el('div',{class:'modal-top'},el('h2',{id:'dialog-title'},title),iconButton('close','Закрыть',()=>closeModal())),body);
+  form.append(el('div',{class:'modal-footer'},extraFooter,onSave?button('Отмена',()=>closeModal()):button('Закрыть',()=>closeModal(true)),saveBtn));
+  form.addEventListener('input',()=>{if(type==='form')state.dirty=true;});
+  form.addEventListener('change',()=>{if(type==='form')state.dirty=true;});
+  form.addEventListener('submit',async e=>{e.preventDefault();if(!onSave||saveBtn.disabled)return;err.hidden=true;saveBtn.disabled=true;try{const ok=await onSave();if(ok!==false&&modalState===state)await closeModal(true);}catch(errValue){err.textContent=errValue.message;err.hidden=false;}finally{saveBtn.disabled=false;}});
+  modal.replaceChildren(form);if(!modal.open)modal.showModal();return {body,err,saveBtn,state};
+}
+modal.addEventListener('cancel',e=>{e.preventDefault();closeModal();});
+function renderNavigation(){const navs=[['today','Сегодня','sun'],['tasks','Задачи','tasks'],['calendar','Календарь','calendar'],['goals','Цели','target'],['projects','Проекты','folder'],['settings','Настройки','sliders']];
+ sidebar.replaceChildren(el('div',{class:'brand'},el('div',{class:'brand-logo'},'F'),el('div',{},el('div',{class:'brand-name'},'Feit Planner'),el('div',{class:'brand-caption'},'МЕНЬШЕ ШУМА. БОЛЬШЕ ДЕЛ.'))),el('div',{class:'side-links'},navs.map(([key,title,icon])=>el('button',{class:'nav-button','aria-current':view===key?'page':null,onclick:()=>route(key)},glyph(icon),title,key==='today'&&S.tasks.filter(t=>isToday(t)).length?el('span',{class:'count'},S.tasks.filter(t=>isToday(t)).length):null))),el('div',{class:'side-bottom'},el('div',{class:'local-status'},el('span',{class:`status-dot ${appStore.pending?'pending':''}`}),el('span',{id:'save-state'},appStore.pending?'Сохраняем…':'Сохранено на устройстве')),el('p',{},'Ваши дела остаются в этом браузере.'),el('div',{class:'version'},`VERSION ${VERSION}`)));
+ const mobile=[['today','Сегодня','sun'],['tasks','Задачи','tasks'],['calendar','Календарь','calendar'],['goals','Цели','target'],['settings','Ещё','more']];mobileNav.replaceChildren(...mobile.map(([key,title,icon])=>el('button',{'aria-current':view===key||(key==='settings'&&view==='projects')?'page':null,onclick:()=>route(key)},glyph(icon),title)));}
+function renderStatus(){const badge=document.getElementById('save-state');if(badge)badge.textContent=appStore.pending?'Сохраняем…':appStore.lastError?'Не сохранено':'Сохранено на устройстве';const dot=document.querySelector('.status-dot');if(dot)dot.classList.toggle('pending',!!appStore.pending||!!appStore.lastError);const banner=document.getElementById('storage-error');if(banner){banner.hidden=!appStore.lastError;banner.textContent=appStore.lastError?`Изменение не применено. ${appStore.lastError}`:'';}}
+function setTheme(){const choice=S?.set.theme||'system';document.documentElement.dataset.theme=choice==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):choice;}
+function render(){if(!S)return;const focus=document.activeElement,focusId=main.contains(focus)?focus?.id:null,start=focus?.selectionStart,end=focus?.selectionEnd;setTheme();renderNavigation();main.replaceChildren(el('div',{id:'storage-error',class:'storage-banner',role:'alert',hidden:true}),PAGES[view]());renderStatus();renderSessionStrip();lastRevision=S.revision;if(focusId){const replacement=document.getElementById(focusId);if(replacement){replacement.focus({preventScroll:true});try{replacement.setSelectionRange(start,end);}catch{}}}}
+function projectName(t){return S.projects.find(p=>p.id===t.projectId)?.title||'';}
+function taskRow(t,{showDate=true}={}){const done=t.st==='done';const meta=[];if(t.main)meta.push(pill('Главное','accent','star'));if(t.st==='wait')meta.push(pill('Ожидание'));if(t.st==='cancel')meta.push(pill('Отменена'));if(t.seriesId)meta.push(glyph('refresh'));if(showDate&&t.day)meta.push(el('span',{},dayLabel(t.day)));if(t.due)meta.push(el('span',{class:isOverdue(t)?'deadline':''},`${isOverdue(t)?'Срок прошёл · ':'Срок · '}${dayLabel(t.due.slice(0,10))}, ${t.due.slice(11)}`));if(t.st==='wait'&&t.chk)meta.push(el('span',{},`Проверить ${dayLabel(t.chk)}`));if(projectName(t))meta.push(el('span',{},projectName(t)));if(t.subtasks.length)meta.push(el('span',{},`${t.subtasks.filter(x=>x.done).length}/${t.subtasks.length} шагов`));
+ return el('div',{class:`task-row${done?' completed':''}`,'data-task-id':t.id},el('button',{class:'check',type:'button','aria-label':`${done?'Вернуть в работу':'Завершить'}: ${t.title}`,onclick:()=>action(s=>setTaskStatus(s,t.id,done?'active':'done'),{label:done?'Возврат задачи':'Завершение задачи',message:done?'Возвращено в работу':'Готово'})},el('span',{class:'check-circle'},done&&glyph('check'))),el('div',{class:'task-main'},el('button',{type:'button',class:'task-title',onclick:()=>editTask(t.id)},t.title),meta.length&&el('div',{class:'task-meta'},meta)),t.min!=null&&el('span',{class:'task-estimate'},glyph('clock'),duration(estimate(t))),iconButton('more',`Действия: ${t.title}`,()=>taskMenu(t.id)));
+}
+function showTaskList(tasks,emptyText='Добавьте первое дело — остальное можно настроить позже.'){return tasks.length?el('div',{class:'task-list'},tasks.map(t=>taskRow(t))):emptyView('Здесь пока пусто',emptyText,button('Добавить задачу',()=>editTask(null),'soft','plus'));}
+function renderTimeline(day,{after=null,excludeId=null}={}) {
+ const line=timeline(S,day).filter(x=>(after==null||x.e>after)&&x.id!==excludeId);
+ if(!line.length)return emptyView('Свободное пространство','Здесь появятся задачи с выбранным временем.',null,'calendar');
+ const rows=line.map(x=>{
+   const title=x.kind==='break'?el('div',{class:'time-title'},x.title):el('button',{type:'button',class:'time-title',onclick:()=>x.kind==='task'?editTask(x.id):editEvent(x.id)},x.title);
+   const note=`${fmtTime(x.s)}–${fmtTime(x.e)}${x.locked?' · фиксировано':x.kind==='task'?' · гибкий план':''}${x.done?' · готово':''}`;
+   return el('div',{class:`time-row ${x.kind}${x.done?' completed':''}`},el('div',{class:'time-label'},fmtTime(x.s)),el('div',{class:'time-content'},title,el('div',{class:'time-note'},note)));
+ });
+ return el('div',{},rows);
+}
+function todayPage(){const day=dateKey(),now=timeOf(),ctx=currentContext(S,day,now),todayTasks=S.tasks.filter(t=>isToday(t,day)),done=S.tasks.filter(t=>!t.del&&t.st==='done'&&t.day===day),mains=todayTasks.filter(t=>t.main),free=sumIntervals(freeTime(S,day,now,{flex:true})),carry=S.tasks.filter(t=>isCarry(t,day)),waiting=S.tasks.filter(t=>!t.del&&t.st==='wait'&&t.chk&&t.chk<=day),date=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+ const left=el('div',{class:'column'},currentCard(ctx));
+ const otherMain=mains.filter(t=>t.id!==ctx.task?.id&&(!t.block||t.block.day!==day||t.block.e<=now));if(otherMain.length)left.append(el('div',{class:'section-title'},el('h2',{},'Главное на сегодня'),el('span',{class:'muted'},`${mains.length} / 3`)),el('div',{class:'task-list'},otherMain.map(t=>taskRow(t,{showDate:false}))));
+ const unscheduled=todayTasks.filter(t=>t.id!==ctx.task?.id&&(!t.block||t.block.day!==day||t.block.e<=now)&&!t.main);
+ if(unscheduled.length)left.append(el('div',{class:'section-title'},el('h2',{},'Ещё на сегодня'),button('Все задачи',()=>{taskFilter='today';route('tasks');},'ghost','arrow')),el('div',{class:'task-list'},unscheduled.slice(0,4).map(t=>taskRow(t,{showDate:false}))));
+ if(!todayTasks.length&&!done.length)left.append(el('div',{class:'attention-card'},el('h3',{},'Начните с одного важного дела'),el('p',{},'Назовите результат, который хотите получить сегодня. Время и детали можно добавить позже.'),button('Добавить на сегодня',()=>editTask(null,{day}),'soft small','plus')));
+ const right=el('div',{class:'column'},el('section',{class:'card timeline-card'},el('div',{class:'timeline-heading'},el('h2',{},'Дальше по плану'),iconButton('calendar','Открыть календарь',()=>{calDay=day;route('calendar');})),renderTimeline(day,{after:now,excludeId:ctx.task?.id||ctx.item?.id})));
+ if(carry.length||waiting.length)left.append(el('div',{class:'attention-card'},el('div',{class:'kicker'},'НЕ ПОТЕРЯЛОСЬ'),el('h3',{},carry.length?`${carry.length} ${plural(carry.length,'дело','дела','дел')} с прошлых дней`:`Пора проверить ${waiting.length} ${plural(waiting.length,'ответ','ответа','ответов')}`),el('p',{},'Незавершённые дела остаются видимыми. Перенос — только по вашему решению.'),button('Разобрать',()=>{taskFilter=carry.length?'carry':'wait';route('tasks');},'ghost small','arrow')));
+ const result=el('div',{},head('Сегодня',date,[button('Собрать план',()=>openPlan(day),'soft','refresh')]),S.migrationNotice&&migrationNotice(),el('section',{class:'summary-strip','aria-label':'Обзор дня'},el('div',{class:'metric'},el('b',{},`${done.length} / ${done.length+todayTasks.length}`),el('span',{},'Дел выполнено')),el('div',{class:'metric'},el('b',{},duration(free)),el('span',{},'Свободно по плану')),el('div',{class:'metric'},el('b',{},`${mains.length}`),el('span',{},'Главных впереди'))),undoBar(),el('div',{class:'day-grid'},left,right));return result;
+}
+function plural(n,one,few,many){const a=n%100,b=n%10;return a>10&&a<20?many:b===1?one:b>=2&&b<=4?few:many;}
+function migrationNotice(){return el('div',{class:'notice neutral'},glyph('shield'),el('div',{class:'grow'},el('b',{},'Ваши прежние данные перенесены'),el('p',{},S.migrationNotice.repeatCount?`Старые настройки повторения (${S.migrationNotice.repeatCount}) сохранены в карточках. Включите их заново — теперь повторы действительно создают задачи.`:'Задачи, события, проекты и цели остались на месте. В настройках доступна копия до обновления.')),iconButton('close','Скрыть сообщение об обновлении',()=>action(s=>s.migrationNotice=null,{message:null})));}
+function undoBar(){const op=S.history.at(-1);return op?el('div',{class:'undo-bar'},el('span',{},op.label),button('Отменить',()=>action(s=>undoHistory(s,op.id),{message:'Изменение отменено'}),'','undo')):null;}
+function currentCard(ctx){let title,eyebrow,description='',tag=null,buttons=[],task=ctx.task;
+ if(ctx.kind==='event'){eyebrow='СЕЙЧАС · ФИКСИРОВАННОЕ СОБЫТИЕ';title=ctx.item.title;tag=pill(`${fmtTime(ctx.item.s)}–${fmtTime(ctx.item.e)}`,'','lock');description='Это время уже занято. Новую задачу приложение не предлагает.';buttons=[button('Детали события',()=>editEvent(ctx.item.id),'soft','calendar')];}
+ else if(ctx.kind==='break'){eyebrow='СЕЙЧАС · ПАУЗА';title='Можно немного выдохнуть';tag=pill(`До ${fmtTime(ctx.item.e)}`,'','coffee');description='Перерыв — часть плана, а не незавершённая задача.';buttons=[button('Посмотреть день',()=>route('calendar'),'soft','calendar')];}
+ else if(task){eyebrow=ctx.kind==='focus'?'В РАБОТЕ':ctx.kind==='suggestion'?'МОЖНО НАЧАТЬ СЕЙЧАС':'ВАШ СЛЕДУЮЩИЙ ШАГ';title=task.title;tag=task.main?pill('Главное','accent','star'):pill('Задача','accent');buttons=[button(ctx.kind==='focus'?'Продолжить сессию':'Начать',()=>beginTask(task.id),ctx.kind==='focus'?'strong':'primary','play'),button('Готово',()=>action(s=>setTaskStatus(s,task.id,'done'),{label:'Завершение задачи',message:'Готово'}),'','check'),iconButton('more','Другие действия',()=>taskMenu(task.id))];}
+ else {eyebrow='СЕЙЧАС';title=ctx.next?'У вас свободное окно':'Выберите следующий шаг';description=ctx.next?`Ближайшее дело — в ${fmtTime(ctx.next.s)}. Будущая задача не выдаётся за текущую.`:'Запишите одно дело или выберите из входящих. Не обязательно заполнять каждую минуту.';buttons=[button('Добавить задачу',()=>editTask(null,{day:dateKey()}),'primary','plus'),button('Выбрать из списка',()=>{taskFilter='all';route('tasks');},'ghost')];}
+ return el('section',{class:'card focus-card'},el('div',{class:'focus-top'},el('span',{class:'kicker'},eyebrow),tag),el('h2',{class:'focus-title'},title),task&&el('div',{class:'focus-meta'},el('span',{},task.min==null?'Оценка времени не указана':`${duration(estimate(task))}${task.estimateSource==='assumed'?' · приблизительно':''}`),projectName(task)&&el('span',{},`· ${projectName(task)}`),isOverdue(task)&&pill('Срок уже прошёл','warn')),description&&el('p',{class:'focus-description'},description),el('div',{class:'button-row'},buttons),ctx.next&&el('div',{class:'next-box'},glyph('arrow'),el('div',{},el('span',{},`Дальше · ${fmtTime(ctx.next.s)}`),el('b',{},ctx.next.title))));
+}
+const FILTERS=[['all','Все'],['today','Сегодня'],['carry','С прошлых дней'],['inbox','Входящие'],['soon','Предстоящие'],['wait','Ожидание'],['done','Готово'],['cancel','Отменены'],['trash','Корзина']];
+function filteredTasks(){let list=S.tasks.filter(t=>taskFilter==='trash'?!!t.del:!t.del);const filter={all:t=>t.st==='active'||t.st==='wait',today:t=>isToday(t),carry:t=>isCarry(t),inbox:t=>active(t)&&!t.day,soon:t=>active(t)&&t.day>dateKey(),wait:t=>t.st==='wait',done:t=>t.st==='done',cancel:t=>t.st==='cancel',trash:()=>true}[taskFilter];list=list.filter(filter);if(projectFilter)list=list.filter(t=>t.projectId===projectFilter);const q=searchText.trim().toLocaleLowerCase('ru-RU');if(q)list=list.filter(t=>`${t.title} ${t.description||''} ${projectName(t)}`.toLocaleLowerCase('ru-RU').includes(q));return list.sort((a,b)=>Number(isOverdue(b))-Number(isOverdue(a))||Number(!!b.main)-Number(!!a.main)||(a.day||'9999').localeCompare(b.day||'9999')||a.ts-b.ts);}
+function tasksPage(){const list=el('div',{id:'task-results'}),caption=el('div',{class:'list-caption'});const fill=()=>{const ts=filteredTasks();caption.replaceChildren(el('span',{},`${ts.length} ${plural(ts.length,'задача','задачи','задач')}`),el('span',{},taskFilter==='all'?'Активные и ожидающие':'По выбранному фильтру'));list.replaceChildren(ts.length?el('div',{class:'task-list'},ts.map(t=>taskFilter==='trash'?el('div',{class:'task-row'},el('div',{class:'task-main'},el('div',{class:'task-title'},t.title),el('div',{class:'task-meta'},'Удалена · можно восстановить')),button('Вернуть',()=>action(s=>{const task=s.tasks.find(x=>x.id===t.id);task.del=0;touch(task);},{label:'Восстановление задачи',message:'Задача восстановлена'}),'small')):taskRow(t))):emptyView(searchText?'Ничего не найдено':'В этом списке пусто',searchText?'Попробуйте изменить запрос или фильтр.':'Добавленные дела будут сохранены на этом устройстве.',button('Добавить задачу',()=>editTask(null,{day:taskFilter==='today'?dateKey():null,projectId:projectFilter}),'soft','plus')));};fill();
+ return el('div',{},head('Задачи','Всё важное — в одном месте',[button('Добавить',()=>editTask(null,{day:taskFilter==='today'?dateKey():null,projectId:projectFilter}),'primary','plus')]),undoBar(),el('div',{class:'toolbar'},el('div',{class:'search'},glyph('search'),input('search',searchText,{id:'task-search',placeholder:'Поиск в выбранном списке','aria-label':'Поиск задач',oninput:e=>{searchText=e.target.value;fill();}})),select([['','Все проекты'],...S.projects.map(p=>[p.id,p.title])],projectFilter,{'aria-label':'Фильтр проекта',class:'project-filter',onchange:e=>{projectFilter=e.target.value;fill();}})),el('div',{class:'filters'},FILTERS.map(([k,title])=>el('button',{type:'button',class:'chip','aria-pressed':String(taskFilter===k),onclick:()=>{taskFilter=k;render();}},title,k==='carry'&&S.tasks.filter(t=>isCarry(t)).length?el('small',{},S.tasks.filter(t=>isCarry(t)).length):null))),caption,list);
+}
+function editTask(taskId=null,defaults={}){
+ const original=taskId?clone(S.tasks.find(t=>t.id===taskId)):null;if(taskId&&!original){toast('Задача не найдена',true);return;}
+ const t=original||{title:'',day:defaults.day??(view==='today'?dateKey():view==='calendar'?calDay:null),min:null,main:false,due:'',priority:0,subtasks:[],projectId:defaults.projectId||null,goalId:defaults.goalId||null};
+ const title=input('text',t.title,{required:true,maxlength:200,id:'task-title-input',placeholder:'Что нужно сделать?',autocomplete:'off'}),day=input('date',t.day||'',{id:'task-day-input','aria-label':'День выполнения'});
+ const options=[['','Без оценки'],['15','15 минут'],['30','30 минут'],['45','45 минут'],['60','1 час'],['90','1,5 часа'],['120','2 часа'],['custom','Другая длительность']];
+ const durSelect=select(options,options.some(([v])=>v===String(t.min))?String(t.min):t.min?'custom':'',{'aria-label':'Длительность'}),custom=input('number',t.min||30,{min:1,max:1440,step:1,'aria-label':'Длительность в минутах'});custom.hidden=durSelect.value!=='custom';durSelect.onchange=()=>custom.hidden=durSelect.value!=='custom';
+ const mainCheck=input('checkbox',null,{checked:!!t.main}),desc=el('textarea',{rows:3,value:t.description||'',maxlength:6000,placeholder:'Контекст, ссылка или первый шаг'});
+ const project=select([['','Без проекта'],...S.projects.map(p=>[p.id,p.title])],t.projectId||'',{'aria-label':'Проект'}),priority=select([['0','Обычный'],['1','Повышенный'],['2','Высокий'],['3','Очень высокий']],String(t.priority||0),{'aria-label':'Приоритет'});
+ const manual=input('time',t.block?fmtTime(t.block.s):'',{'aria-label':'Начало по расписанию'}),locked=input('checkbox',null,{checked:!!t.locked}),due=input('datetime-local',t.due||'',{'aria-label':'Жёсткий срок'});
+ const repeat=select([['none','Не повторять'],['daily','Каждый день'],['weekly','Каждую неделю'],['monthly','Каждый месяц']],t.repeat||'none',{'aria-label':'Повторение',disabled:!!t.seriesId});
+ const goal=select([['','Без цели'],...S.goals.map(g=>[g.id,g.title])],t.goalId||'',{'aria-label':'Связанная цель'}),contributes=input('checkbox',null,{checked:!!t.countsForGoal});
+ const contribution=checkLabel('Завершение этой задачи даёт +1 к результату цели',contributes);contribution.hidden=!goal.value;goal.onchange=()=>contribution.hidden=!goal.value;
+ const subBox=el('div',{}),subs=clone(t.subtasks||[]);const drawSubs=()=>{subBox.replaceChildren(...subs.map(x=>{const ck=input('checkbox',null,{checked:x.done,'aria-label':'Шаг выполнен',onchange:e=>x.done=e.target.checked}),name=input('text',x.title,{placeholder:'Конкретный шаг',maxlength:300,'aria-label':'Название шага',oninput:e=>x.title=e.target.value});return el('div',{class:'subtask-edit'},ck,name,iconButton('close','Удалить шаг',()=>{subs.splice(subs.indexOf(x),1);if(modalState)modalState.dirty=true;drawSubs();}));}));};drawSubs();
+ const durationField=field('Примерно займёт',el('div',{},durSelect,custom));
+ const dateField=field('Когда сделать',day);dateField.append(el('div',{class:'choice-row'},[['Сегодня',dateKey()],['Завтра',shiftDay(dateKey(),1)],['Без даты','']].map(([label,d])=>el('button',{type:'button',class:'chip',onclick:()=>{day.value=d;day.dispatchEvent(new Event('change',{bubbles:true}));}},label))));
+ const detail=el('details',{class:'details'},el('summary',{},glyph('sliders'),'Детали, сроки и повторения'),field('Описание',desc),el('div',{class:'form-grid'},field('Проект',project),field('Приоритет',priority)),el('div',{class:'form-grid'},field('Начать в конкретное время',manual,'Необязательно. Нужны выбранный день и длительность.'),field('Жёсткий срок',due,'Не меняется при переносе задачи.')),checkLabel('Закрепить время: не двигать при перестроении',locked),field('Повторение',repeat,t.seriesId?'Редактируется только этот экземпляр. Будущие повторы можно остановить в меню задачи.':'Создаём отдельные задачи на 30 дней вперёд. Дедлайн относится только к первому экземпляру. Для 31-го числа в коротком месяце используется последний день.'),t.legacyRepeat&&el('div',{class:'notice neutral'},`В старой версии было указано «${{daily:'ежедневно',weekly:'еженедельно',monthly:'ежемесячно'}[t.legacyRepeat]||t.legacyRepeat}». Повторы ещё не включены.`),field('Связать с результатом',goal),contribution,el('div',{class:'subsection'},el('h3',{},'Небольшие шаги'),subBox,button('Добавить шаг',()=>{subs.push({id:id(),title:'',done:false});if(modalState)modalState.dirty=true;drawSubs();},'ghost small','plus')));
+ const body=el('div',{},field('Задача',title),el('div',{class:'form-grid'},dateField,durationField),checkLabel('Главное на этот день',mainCheck),detail);
+ if(t.st==='wait')body.prepend(el('div',{class:'notice neutral'},'Эта задача ожидает ответа и не включается в рабочую нагрузку.'));
+ openModal(taskId?'Задача':'Новое дело',body,{onSave:async()=>{const min=durSelect.value==='custom'?+custom.value:durSelect.value?+durSelect.value:null;if(min!==null&&(!Number.isInteger(min)||min<1||min>1440))throw Error('Длительность — от 1 до 1440 минут');let block=null;if(manual.value){if(!min)throw Error('Для точного времени укажите длительность');const start=parseTime(manual.value),n=original?.min===min&&original?.left!=null?original.left:min;if(n<=0)throw Error('Уточните оставшееся время или завершите задачу');if(start+n>1440)throw Error('Задача должна закончиться в выбранный день');block={day:day.value,s:start,e:start+n};}
+ if(block&&due.value&&`${day.value}T${fmtTime(block.e)}`>due.value){if(!await ask('Время позже дедлайна','Выбранная работа закончится после жёсткого срока. Срок останется прежним. Всё равно сохранить это время?','Сохранить время'))return false;}
+ const draft={title:title.value,day:day.value||null,min,main:mainCheck.checked,description:desc.value,projectId:project.value||null,priority:+priority.value,due:due.value,locked:!!(locked.checked&&block),block,repeat:repeat.value,goalId:goal.value||null,countsForGoal:!!(goal.value&&contributes.checked),subtasks:subs.filter(x=>x.title.trim()).map(x=>({...x,title:x.title.trim()}))};
+ return action(s=>saveTask(s,draft,{taskId,expectedRev:original?.rev}),{label:taskId?'Изменение задачи':'Добавление задачи',message:taskId?'Задача обновлена':'Задача добавлена'});}});
+ setTimeout(()=>title.focus({preventScroll:true}),80);
+}
+function taskMenu(taskId){const t=S.tasks.find(t=>t.id===taskId);if(!t)return;const menu=el('div',{class:'action-menu'});const add=(icon,text,fn,danger=false)=>menu.append(el('button',{type:'button',class:`menu-action${danger?' danger':''}`,onclick:fn},glyph(icon),text));
+ if(active(t))add('play','Начать сессию',()=>beginTask(taskId));
+ add('edit','Изменить задачу',()=>editTask(taskId));
+ if(t.st==='done'||t.st==='wait'||t.st==='cancel')add('undo','Вернуть в работу',async()=>{if(await action(s=>setTaskStatus(s,taskId,'active'),{label:'Возврат задачи',message:'Возвращено в работу'}))closeModal(true);});
+ if(active(t)){add('calendar','Перенести на другой день',()=>moveTask(taskId));add('clock','Жду ответа / материалов',()=>waitTask(taskId));add('info','Трудно начать — выбрать первый шаг',()=>helpTask(taskId));}
+ const series=S.series.find(r=>r.id===t.seriesId);
+ if(series?.enabled)add('refresh','Остановить будущие повторы',async()=>{const yes=await ask('Остановить повторение?','Текущая задача и история останутся. Невыполненные экземпляры с будущих дней будут отменены.','Остановить');if(yes&&await action(s=>{s.series.find(r=>r.id===series.id).enabled=false;s.tasks.filter(x=>x.seriesId===series.id&&active(x)&&x.occurrenceDay>dateKey()).forEach(x=>{x.st='cancel';x.block=null;touch(x);});},{label:'Остановка повторения',message:'Будущие повторы остановлены'}))closeModal(true);});
+ add('trash','Удалить в корзину',async()=>{if(S.activeSession?.taskId===taskId){toast('Сначала завершите активную сессию',true);return;}if(await action(s=>{const x=s.tasks.find(x=>x.id===taskId);x.del=Date.now();touch(x);s.buffers=s.buffers.filter(b=>b.taskId!==taskId);},{label:'Удаление задачи',message:'Удалено. Можно вернуть из корзины'}))closeModal(true);},true);
+ openModal(t.title,menu,{type:'menu'});
+}
+function moveTask(taskId){const t=S.tasks.find(t=>t.id===taskId),day=input('date',shiftDay(dateKey(),1),{required:true});openModal('Перенести задачу',el('div',{},field('Новый день',day),el('p',{class:'muted'},'Запланированное время будет снято. Дедлайн не изменится.'),t.due&&el('div',{class:'notice'},`Текущий срок: ${dayLabel(t.due.slice(0,10))}, ${t.due.slice(11)}.`)),{onSave:()=>action(s=>{if(s.activeSession?.taskId===taskId)throw Error('Сначала завершите сессию этой задачи');const x=s.tasks.find(x=>x.id===taskId);if(x.day!==day.value)x.moves=(x.moves||0)+1;x.day=day.value;x.block=null;x.locked=false;touch(x);s.buffers=s.buffers.filter(b=>b.taskId!==taskId);},{label:'Перенос задачи',message:'День изменён. Дедлайн сохранён'})});}
+function waitTask(taskId){const chk=input('date',shiftDay(dateKey(),1),{required:true});openModal('Когда проверить ответ?',el('div',{},field('Дата проверки',chk),el('p',{class:'muted'},'До возвращения в работу задача не займёт время в плане. В день проверки она появится в блоке внимания.')), {onSave:()=>action(s=>{setTaskStatus(s,taskId,'wait');s.tasks.find(t=>t.id===taskId).chk=chk.value;},{label:'Перевод в ожидание',message:'Задача в ожидании'})});}
+function helpTask(taskId){const t=S.tasks.find(t=>t.id===taskId);const list=el('div',{class:'action-menu'},el('p',{class:'muted'},'Выберите причину. Ничего не изменится без подтверждения.'),button('Не хватает времени — уточнить оценку',()=>editTask(taskId),'block'),button('Не знаю, с чего начать — записать первый шаг',()=>{const step=input('text','',{required:true,placeholder:'Например: открыть документ и написать 3 пункта'});openModal('Первый шаг на 5–15 минут',field('Что можно сделать прямо сейчас?',step),{onSave:()=>action(s=>{const x=s.tasks.find(t=>t.id===taskId);if(!step.value.trim())throw Error('Запишите первый шаг');x.subtasks.push({id:id(),title:step.value.trim(),done:false});touch(x);},{label:'Добавление первого шага',message:'Шаг добавлен в задачу'})});},'block'),button('Жду другого человека',()=>waitTask(taskId),'block'),button('Это больше не нужно',async()=>{if(await action(s=>setTaskStatus(s,taskId,'cancel'),{label:'Отмена ненужной задачи',message:'Задача отменена, а не засчитана выполненной'}))closeModal(true);},'block danger'));openModal('Что мешает начать?',list,{type:'menu'});}
+function editEvent(eventId=null){const original=eventId?clone(S.events.find(e=>e.id===eventId)):null;const e=original||{title:'',day:view==='calendar'?calDay:dateKey(),s:600,e:660};const title=input('text',e.title,{required:true,maxlength:200}),day=input('date',e.day,{required:true}),start=input('time',fmtTime(e.s),{required:true}),end=input('time',fmtTime(e.e),{required:true});
+ const extraFooter=eventId?[button('Удалить',async()=>{const yes=await ask('Удалить событие?','Освободится его время. Последнюю операцию можно отменить.','Удалить',{danger:true});if(yes&&await action(s=>{s.events=s.events.filter(x=>x.id!==eventId);},{label:'Удаление события',message:'Событие удалено'}))closeModal(true);},'danger')]:[];
+ openModal(eventId?'Событие':'Новое событие',el('div',{},field('Название',title),field('Дата',day),el('div',{class:'form-grid'},field('Начало',start),field('Конец',end)),el('p',{class:'muted'},'Фиксированное событие не сдвигается при перестроении.')),{extraFooter,onSave:()=>action(s=>{const a=parseTime(start.value),b=parseTime(end.value);if(b<=a)throw Error('Конец должен быть позже начала');if(!title.value.trim())throw Error('Введите название события');if(original&&JSON.stringify(s.events.find(x=>x.id===eventId))!==JSON.stringify(original))throw Error('Событие изменили в другой вкладке. Откройте его заново.');const clashes=[...s.events.filter(x=>x.id!==eventId&&x.day===day.value),...s.tasks.filter(t=>active(t)&&t.block?.day===day.value).map(t=>({...t.block,title:t.title}))].filter(x=>a<x.e&&x.s<b);if(clashes.length)throw Error(`Это время занято: «${clashes[0].title}». Измените время события или задачи.`);const value={id:eventId||id(),title:title.value.trim(),day:day.value,s:a,e:b};if(eventId)s.events[s.events.findIndex(x=>x.id===eventId)]=value;else s.events.push(value);},{label:eventId?'Изменение события':'Добавление события',message:'Событие сохранено'})});
+}
+function calendarPage(){const weekday=(new Date(calDay+'T12:00:00').getDay()+6)%7,first=shiftDay(calDay,-weekday),days=Array.from({length:7},(_,i)=>shiftDay(first,i)),ts=S.tasks.filter(t=>active(t)&&t.day===calDay&&!t.block);const dateInput=input('date',calDay,{class:'date-jump','aria-label':'Выбрать дату',onchange:e=>{if(e.target.value){calDay=e.target.value;render();}}});
+ return el('div',{},head('Календарь','Ваши договорённости со временем',[button('Задача',()=>editTask(null,{day:calDay}),'primary','plus')]),undoBar(),el('div',{class:'calendar-top'},iconButton('left','Предыдущая неделя',()=>{calDay=shiftDay(calDay,-7);render();}),el('h2',{},new Date(calDay+'T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})),iconButton('right','Следующая неделя',()=>{calDay=shiftDay(calDay,7);render();}),dateInput),el('div',{class:'calendar-strip'},days.map(d=>el('button',{type:'button',class:`day-cell${d===dateKey()?' today':''}`,'aria-pressed':String(d===calDay),'aria-label':dayLabel(d),onclick:()=>{calDay=d;render();}},el('small',{},new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'short'})),el('b',{},+d.slice(-2)),el('span',{class:`day-dot${S.tasks.some(t=>!t.del&&t.day===d)||S.events.some(e=>e.day===d)?'':' empty-dot'}`})))),el('div',{class:'button-row',style:{marginBottom:'20px'}},button('Сегодня',()=>{calDay=dateKey();render();},'ghost small'),calDay>=dateKey()&&button('Собрать план',()=>openPlan(calDay),'soft small','refresh'),button('Добавить событие',()=>editEvent(),'small','calendar')),el('div',{class:'calendar-grid'},el('section',{class:'card timeline-card'},el('div',{class:'timeline-heading'},el('h2',{},dayLabel(calDay))),renderTimeline(calDay)),el('div',{},el('div',{class:'section-title'},el('h2',{},'Без назначенного времени')),ts.length?el('div',{class:'task-list'},ts.map(t=>taskRow(t,{showDate:false}))):emptyView('Всё на своих местах','Новые задачи этого дня появятся здесь.',null,'check'),el('p',{class:'fine',style:{marginTop:'16px'}},'Нажмите на задачу, чтобы задать время. Перетаскивание в этой версии не используется.'))));
+}
+function goalsPage(){const totalSeconds=S.sessions.reduce((n,x)=>n+x.seconds,0);return el('div',{},head('Цели','Не больше галочек — ближе к результату',[button('Новая цель',()=>editGoal(),'primary','plus')]),undoBar(),S.goals.length?el('div',{class:'goal-grid'},S.goals.map(g=>{const p=goalProgress(S,g),next=S.tasks.find(t=>active(t)&&t.goalId===g.id);return el('section',{class:'card goal-card'},el('div',{class:'timeline-heading'},el('div',{class:'project-color'},glyph('target')),iconButton('more',`Изменить цель: ${g.title}`,()=>editGoal(g.id))),el('h2',{},g.title),el('p',{class:'muted'},g.unit||'результатов'),el('div',{class:'goal-number'},p.value,el('small',{},` / ${p.target}`)),el('div',{class:'progress-track',role:'progressbar','aria-label':g.title,'aria-valuenow':Math.min(p.value,p.target),'aria-valuemax':p.target},el('div',{class:'progress-fill',style:{width:`${Math.min(100,p.value/p.target*100)}%`}})),el('p',{class:'goal-detail'},`${p.manual} отмечено вручную · ${p.linked} подтверждено завершёнными задачами`),el('div',{class:'goal-next'},el('div',{class:'kicker'},'СЛЕДУЮЩЕЕ ДЕЙСТВИЕ'),next?el('button',{type:'button',class:'soft-link',onclick:()=>editTask(next.id)},next.title):button('Связать новую задачу',()=>editTask(null,{goalId:g.id}),'soft small','plus')));})):el('div',{class:'card'},emptyView('Какой результат вам нужен?','Например, опубликовать 4 ролика. Завершение нужной задачи можно связать с прогрессом цели.',button('Создать цель',()=>editGoal(),'soft','plus'),'target')),el('section',{class:'card',style:{marginTop:'22px'}},el('div',{class:'section-title',style:{marginTop:'0'}},el('h2',{},'Факты, без оценки продуктивности')),el('div',{class:'stat-table'},el('span',{},'Завершённых задач'),el('b',{},S.tasks.filter(t=>!t.del&&t.st==='done').length),el('span',{},'Записано сессий'),el('b',{},S.sessions.length),el('span',{},'Время в сессиях'),el('b',{},duration(Math.round(totalSeconds/60)))),el('p',{class:'fine',style:{marginTop:'15px'}},'Таймер измеряет длительность сессии, а не концентрацию или ценность результата.')));}
+function editGoal(goalId=null){const g=goalId?clone(S.goals.find(x=>x.id===goalId)):{title:'',target:4,value:0,unit:'результатов'};const title=input('text',g.title,{required:true,maxlength:200}),target=input('number',g.target,{required:true,min:1,max:1000000,step:1}),value=input('number',g.value,{required:true,min:0,max:1000000,step:1}),unit=input('text',g.unit||'',{maxlength:60});const extraFooter=goalId?[button('Удалить',async()=>{if(await ask('Удалить цель?','Задачи останутся, но их связь с этой целью будет снята.','Удалить',{danger:true})&&await action(s=>{s.goals=s.goals.filter(x=>x.id!==goalId);s.tasks.filter(t=>t.goalId===goalId).forEach(t=>{t.goalId=null;t.countsForGoal=false;touch(t);});s.series.filter(r=>r.template.goalId===goalId).forEach(r=>{r.template.goalId=null;r.template.countsForGoal=false;});},{label:'Удаление цели',message:'Цель удалена, задачи сохранены'}))closeModal(true);},'danger')]:[];
+ openModal(goalId?'Изменить цель':'Новая цель',el('div',{},field('Какой результат нужен?',title),el('div',{class:'form-grid'},field('Сколько всего?',target),field('Единица результата',unit)),field('Уже сделано вручную',value,'Это начальный результат. Отмеченные как вклад завершённые задачи добавляются отдельно, без двойного начисления.')),{extraFooter,onSave:()=>action(s=>{if(!title.value.trim())throw Error('Назовите цель');const val={id:goalId||id(),title:title.value.trim(),target:+target.value,value:+value.value,unit:unit.value.trim()};if(goalId){if(JSON.stringify(s.goals.find(x=>x.id===goalId))!==JSON.stringify(g))throw Error('Цель изменена в другой вкладке. Откройте её заново.');s.goals[s.goals.findIndex(x=>x.id===goalId)]=val;}else s.goals.push(val);},{label:goalId?'Изменение цели':'Добавление цели',message:'Цель сохранена'})});}
+function projectsPage(){return el('div',{},head('Проекты','Разделите дела по направлениям',[button('Новый проект',()=>editProject(),'primary','plus')]),undoBar(),S.projects.length?el('div',{class:'goal-grid'},S.projects.map(p=>{const ts=S.tasks.filter(t=>!t.del&&t.projectId===p.id),done=ts.filter(t=>t.st==='done').length;return el('div',{class:'card goal-card'},el('div',{class:'timeline-heading'},el('div',{class:'project-color'},glyph('folder')),iconButton('edit',`Изменить проект: ${p.title}`,()=>editProject(p.id))),el('h2',{},p.title),el('p',{class:'muted'},`${done} из ${ts.length} задач завершено`),el('div',{class:'progress-track'},el('div',{class:'progress-fill',style:{width:`${ts.length?done/ts.length*100:0}%`}})),button('Открыть задачи',()=>{projectFilter=p.id;taskFilter='all';searchText='';route('tasks');},'soft small','arrow'));})):el('div',{class:'card'},emptyView('Разложите дела по направлениям','Работа, учёба или личные проекты — названия выбираете вы.',button('Создать проект',()=>editProject(),'soft','plus'),'folder')));}
+function editProject(projectId=null){const p=projectId?clone(S.projects.find(x=>x.id===projectId)):{title:''},title=input('text',p.title,{required:true,maxlength:100});const extraFooter=projectId?[button('Удалить',async()=>{if(await ask('Удалить проект?','Все его задачи сохранятся без проекта.','Удалить',{danger:true})&&await action(s=>{s.projects=s.projects.filter(x=>x.id!==projectId);s.tasks.filter(t=>t.projectId===projectId).forEach(t=>{t.projectId=null;touch(t);});s.series.filter(r=>r.template.projectId===projectId).forEach(r=>r.template.projectId=null);},{label:'Удаление проекта',message:'Проект удалён, задачи сохранены'}))closeModal(true);},'danger')]:[];openModal(projectId?'Изменить проект':'Новый проект',field('Название',title),{extraFooter,onSave:()=>action(s=>{if(!title.value.trim())throw Error('Назовите проект');if(s.projects.some(x=>x.id!==projectId&&x.title.toLocaleLowerCase()===title.value.trim().toLocaleLowerCase()))throw Error('Проект с таким названием уже есть');if(projectId){const current=s.projects.find(x=>x.id===projectId);if(!current||current.title!==p.title)throw Error('Проект изменился. Откройте его заново.');current.title=title.value.trim();}else s.projects.push({id:id(),title:title.value.trim()});},{label:projectId?'Переименование проекта':'Добавление проекта',message:'Проект сохранён'})});}
+function openPlan(day=dateKey()){
+ if(day<dateKey()){toast('Прошлое не переписываем. Выберите сегодня или будущий день.',true);return;}
+ let snapshot=clone(S),proposal=null;const carryCount=S.tasks.filter(t=>isCarry(t,day)).length;
+ const lastEnd=Math.max(0,...(S.set.days[new Date(day+'T12:00:00').getDay()]||[]).map(x=>x[1]));
+ const end=input('time',fmtTime(Math.min(1439,S.set.dayEnds?.[day]??(lastEnd||1080))),{required:true,'aria-label':'Закончить день в'});
+ const include=input('checkbox',null,{checked:false}),remaining={},transferIds=new Set(),preview=el('div',{id:'plan-preview'}),stale=el('div',{class:'notice',id:'plan-stale',hidden:true},'Данные изменились. Нажмите «Пересчитать», чтобы проверить актуальное предложение.');
+ const started=S.tasks.filter(t=>active(t)&&t.started&&(t.day===day||t.day<day));
+ const body=el('div',{},el('div',{class:'notice neutral'},glyph('info'),el('div',{},'Сначала предложение, потом изменения. Закреплённое время и дедлайны остаются на месте.')),el('div',{class:'form-grid'},field('Закончить день в',end),field('Дата плана',input('date',day,{disabled:true}))),carryCount?checkLabel(`Включить ${carryCount} ${plural(carryCount,'дело','дела','дел')} с прошлых дней`,include):null,started.length?el('div',{class:'subsection'},el('h3',{},'Сколько работы осталось?'),el('p',{class:'form-help'},'Прошедшее время таймера не равно готовой работе. Уточните остаток сами.'),started.map(t=>{const inputRemaining=input('number',estimate(t),{min:0,max:1440,step:1,'aria-label':`Осталось: ${t.title}`,onchange:e=>{const n=+e.target.value;if(Number.isInteger(n)&&n>=0&&n<=1440){remaining[t.id]=n;draw();}}});return field(`${t.title} · минут`,inputRemaining);})):null,stale,button('Пересчитать',()=>{snapshot=clone(S);draw();},'soft small','refresh'),preview);
+ const modalResult=openModal('План без перегрузки',body,{wide:true,type:'plan',saveText:'Применить план',onSave:async()=>{
+  if(day<dateKey()||(day===dateKey()&&proposal.placed.some(x=>!x.locked&&x.s<timeOf())))throw Error('Время изменилось. Пересчитайте предложение перед применением.');
+  return action(s=>applyPlan(s,proposal,[...transferIds]),{label:'Перестроение дня',message:'План обновлён',expectedRevision:proposal.revision});
+ }});
+ function draw(){let cutoff;try{cutoff=parseTime(end.value);}catch{preview.replaceChildren(el('div',{class:'notice'},'Укажите время окончания дня'));modalResult.saveBtn.disabled=true;return;}
+  proposal=planDay(snapshot,{day,from:day===dateKey()?timeOf():0,end:cutoff,includeCarry:include.checked,remaining});modalResult.state.planRevision=proposal.revision;
+  stale.hidden=S.revision===proposal.revision;modalResult.saveBtn.disabled=proposal.conflicts.length>0||S.revision!==proposal.revision;
+  const old=id=>snapshot.tasks.find(t=>t.id===id);const pieces=[el('div',{class:'plan-stat'},el('div',{},el('b',{},duration(proposal.capacity)),el('span',{},'ДОСТУПНО ДЛЯ ГИБКИХ ЗАДАЧ')),el('div',{},el('b',{},duration(proposal.required)),el('span',{},'НУЖНО ДЛЯ ВЫБРАННЫХ ДЕЛ')))];
+  if(proposal.conflicts.length)pieces.push(el('div',{class:'notice'},glyph('alert'),el('div',{},el('b',{},'Закреплённые интервалы пересекаются'),proposal.conflicts.map(x=>el('p',{},x)),el('p',{},'Исправьте их вручную. План пока нельзя применить.'))));
+  if(!proposal.placed.length&&!proposal.unplaced.length)pieces.push(emptyView('В плане ещё нет задач','Добавьте дело на этот день или включите незавершённые.',null,'tasks'));
+  if(proposal.placed.some(x=>x.assumed))pieces.push(el('div',{class:'notice neutral'},'Для задач без оценки предложено 30 минут. При применении эта оценка будет сохранена как приблизительная.'));
+  if(proposal.placed.length)pieces.push(el('h3',{class:'plan-section'},`Получилось разместить · ${proposal.placed.length}`));
+  for(const x of proposal.placed){const t=old(x.id),prev=t.block,unchanged=prev?.day===day&&prev.s===x.s&&prev.e===x.e;pieces.push(el('div',{class:'plan-item'},el('div',{class:'plan-time'},`${fmtTime(x.s)}–${fmtTime(x.e)}${x.locked?' · закреплено':''}`),el('b',{},x.title),el('p',{},x.locked?'Фиксированное время не меняется.':unchanged?'Без изменений.':prev?`Было: ${dayLabel(prev.day)}, ${fmtTime(prev.s)}–${fmtTime(prev.e)}. Перераспределено в доступное окно.`:'Новое время в свободном интервале.'),x.late&&pill('Просрочка сохранится. Планируем завершение.','warn'),x.assumed&&el('p',{},'30 минут — предположение, а не измерение.')));}
+  if(proposal.buffers.length)pieces.push(el('p',{class:'form-help'},`Перерывы: ${proposal.buffers.map(b=>`${fmtTime(b.s)}–${fmtTime(b.e)}`).join(', ')}. До ${snapshot.set.gap} минут после задачи в пределах свободного окна.`));
+  if(proposal.unplaced.length)pieces.push(el('h3',{class:'plan-section'},`Не распределено · ${proposal.unplaced.length}`),el('p',{class:'form-help'},'Это не потерянные задачи. Они останутся видимыми. Перенос на завтра — только по вашей отметке.'));
+  for(const x of proposal.unplaced){const t=old(x.id),mayTransfer=!t.locked&&(!t.due||t.due.slice(0,10)>day);const ck=input('checkbox',null,{checked:transferIds.has(x.id),onchange:e=>e.target.checked?transferIds.add(x.id):transferIds.delete(x.id)});pieces.push(el('div',{class:'plan-item warn'},el('b',{},x.title),el('p',{},x.reason),mayTransfer?checkLabel(`Перенести на ${dayLabel(shiftDay(day,1)).toLowerCase()} без времени${t.due?' · срок останется прежним':''}`,ck):el('p',{},'Останется без автоматического переноса. Решите вручную.')));}
+  if(proposal.required>0&&!proposal.capacity)pieces.push(el('p',{class:'form-help'},'Проверьте рабочие часы в настройках: это может быть выходной или конец рабочего дня.'));
+  preview.replaceChildren(...pieces);
  }
- return {free,total,placed,unplaced,planned:cand.reduce((a,t)=>a+need(t),0)};
+ end.addEventListener('change',()=>draw());include.addEventListener('change',()=>draw());draw();
 }
-
-/* ===== Хранилище: IndexedDB, «Сохранено» только после завершения транзакции ===== */
-let dbp;const idb=()=>dbp||(dbp=new Promise((ok,no)=>{const r=indexedDB.open('ritm',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}).catch(e=>{dbp=null;throw e}));
-const put=async(k,v)=>{const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=ok;t.onerror=t.onabort=()=>no(t.error)})};
-const get=async k=>{const d=await idb();return new Promise((ok,no)=>{const r=d.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})};
-
-/* ===== Состояние ===== */
-const empty=()=>({v:1,tasks:[],events:[],set:{s:540,e:1080,gap:10},undo:null,projects:[],goals:[],sessions:[]});
-let S,view='today',flt='inbox',q='';
-const dlg=h('dialog'),tz=h('div',{class:'toast',role:'status','aria-live':'polite'});let tt;
-const toast=(m,bad)=>{tz.textContent=m;tz.className='toast show'+(bad?' bad':'');clearTimeout(tt);tt=setTimeout(()=>{tz.className='toast'},2800)};
-let writeQueue=Promise.resolve();
-function commit(n,msg){S=n;render();const snapshot=structuredClone(n);const task=writeQueue.catch(()=>{}).then(()=>put('state',snapshot));writeQueue=task;return task.then(()=>{if(msg)toast(msg);return true}).catch(()=>{toast('Не удалось сохранить. Экспортируйте данные и повторите попытку',true);return false})}
-const mut=(fn,msg)=>{const n=structuredClone(S);fn(n);return commit(n,msg)};
-const patch=(t,o,m)=>mut(n=>{n.undo=null;const x=n.tasks.find(y=>y.id===t.id);if(x)Object.assign(x,o)},m);
-const setSt=(t,st)=>patch(t,{st},st==='done'?'Готово':'Возвращено в работу');
-const snap=t=>({day:t.day,block:t.block||null,moves:t.moves||0,left:t.left||null});
-const postpone=t=>mut(n=>{const x=n.tasks.find(y=>y.id===t.id);n.undo={label:'Отложено: '+t.title,items:[{id:t.id,b:snap(x)}]};Object.assign(x,{day:tom(),block:null,moves:(x.moves||0)+1})},'Отложено на завтра');
-const undo=()=>mut(n=>{for(const i of n.undo.items){const t=n.tasks.find(x=>x.id===i.id);if(t&&t.st==='active')Object.assign(t,i.b)}n.undo=null},'Изменение отменено');
-const overdue=t=>t.st==='active'&&t.due&&t.due<today()+'T'+hm(nowMin());
-const meta=t=>[t.min||t.left?dur(t.left||t.min):'Длительность не указана',t.main&&'★ Главное',t.day&&'на '+(t.day===today()?'сегодня':dm(t.day)),t.due&&'срок '+t.due.replace('T',' '),overdue(t)&&'Просрочено',t.st==='wait'&&t.chk&&'проверить '+dm(t.chk),t.st==='cancel'&&'отменена',t.moves&&'переносов: '+t.moves].filter(Boolean).join(' · ');
-
-/* ===== Диалоги ===== */
-function form(title,fields,ok){
-  const err=h('p',{class:'warn',role:'alert'}),I={};
-  const f=h('form',{onsubmit:async e=>{e.preventDefault();const v={};for(const k in I)v[k]=I[k].type==='checkbox'?I[k].checked:I[k].value;const r=await ok(v);if(typeof r==='string'){err.textContent=r;return}if(r!==false)dlg.close()}},
-    h('h2',{},title),
-    ...fields.map(([k,lab,type,val,at])=>{const i=h('input',{type,name:k,...at});if(type==='checkbox')i.checked=!!val;else i.value=val==null?'':val;I[k]=i;return h('label',{class:type==='checkbox'?'ck':''},type==='checkbox'?[i,lab]:[lab,i])}),
-    err,h('div',{class:'row'},h('button',{type:'button',onclick:()=>dlg.close()},'Отмена'),h('button',{class:'pri'},'Сохранить')));
-  dlg.replaceChildren(f);if(!dlg.open)dlg.showModal();
+async function beginTask(taskId){const t=S.tasks.find(t=>t.id===taskId);if(!t||!active(t))return;
+ if(S.activeSession){if(S.activeSession.taskId!==taskId)toast('Сначала завершите текущую сессию',true);openFocus();return;}
+ const now=timeOf(),event=S.events.find(e=>e.day===dateKey()&&e.s<=now&&e.e>now);if(event&&!await ask('Сейчас идёт событие',`«${event.title}» до ${fmtTime(event.e)}. Начать сессию этой задачи всё равно?`,'Начать'))return;
+ if(await action(s=>startFocus(s,taskId),{message:null}))openFocus();
 }
-function editTask(t){
-  const td=today(),isNew=!t;t=t||{};
-  form(isNew?'Новая задача':'Задача',[
-    ['title','Название','text',t.title,{required:true,maxlength:120}],
-    ['min','Длительность, мин (необязательно)','number',t.min||'',{min:5,max:600,step:5,inputmode:'numeric'}],
-    ['today','На сегодня','checkbox',t.day===td],
-    ['main','Главное сегодня (до трёх)','checkbox',t.main],
-    ['due','Жёсткий срок (необязательно)','datetime-local',t.due||''],
-     ['description','Описание','text',t.description||''],
-     ['project','Проект (название)','text',t.project||''],
-     ['priority','Приоритет (0–3)','number',t.priority||0,{min:0,max:3}],
-     ['repeat','Повтор: none / daily / weekly / monthly','text',t.repeat||'none'],
-     ['locked','Закрепить запланированный блок','checkbox',t.locked||false]],v=>{
-    const title=v.title.trim();if(!title)return'Введите название';
-    if(v.main&&v.today&&S.tasks.filter(x=>!x.del&&x.st==='active'&&x.day===td&&x.main&&x.id!==t.id).length>=3)return'Главных дел на сегодня не больше трёх';
-    const f={title,min:+v.min||0,main:v.main,due:v.due,description:v.description,project:v.project,priority:Math.max(0,Math.min(3,+v.priority||0)),repeat:['none','daily','weekly','monthly'].includes(v.repeat)?v.repeat:'none',locked:v.locked,day:v.today?td:(t.day&&t.day>td?t.day:null)};
-    if(isNew)return mut(n=>{n.tasks.push({id:uid(),st:'active',moves:0,ts:Date.now(),block:null,...f})},'Задача сохранена');
-    if(f.day!==t.day)f.block=null;if(f.min!==(t.min||0))f.left=0;
-    return patch(t,f,'Задача сохранена');
-  });
+function openFocus(){const session=S.activeSession;if(!session)return;const t=S.tasks.find(t=>t.id===session.taskId);const pause=button(session.startedAt==null?'Продолжить':'Пауза',()=>action(s=>pauseFocus(s,session.id),{message:null}),'soft','pause');pause.id='focus-pause';
+ const content=el('div',{},el('h3',{class:'focus-modal-title'},t?.title||'Сессия'),el('div',{class:'focus-clock',id:'focus-clock','aria-live':'off'},'00:00'),el('p',{class:'clock-caption',id:'focus-caption'},'Сессия сохраняется после перезагрузки'),el('div',{class:'focus-status'},pill('Одно дело за раз','accent')),el('div',{class:'button-row',style:{justifyContent:'center'}},pause,button('Сохранить сессию',async()=>{if(await action(s=>endFocus(s,session.id,false),{message:'Сессия сохранена'}))closeModal(true);},'','check')),el('div',{style:{marginTop:'13px'}},button('Завершить задачу',async()=>{if(await action(s=>endFocus(s,session.id,true),{message:'Задача выполнена, сессия сохранена'}))closeModal(true);},'primary block','check')),el('p',{class:'form-help',style:{textAlign:'center',marginTop:'17px'}},'Можно закрыть это окно — сессия продолжится. Не работали во время паузы? Нажмите «Пауза».'));
+ const result=openModal('Фокус',content,{type:'focus'});result.state.sessionId=session.id;renderTimer();
 }
-const addEvent=()=>form('Новое событие',[['title','Название','text','',{required:true,maxlength:80}],['day','Дата','date',today(),{required:true}],['s','Начало','time','10:00',{required:true}],['e','Конец','time','11:00',{required:true}]],v=>{
-  const s=pm(v.s),e=pm(v.e);if(e<=s)return'Конец должен быть позже начала';
-  return mut(n=>{n.events.push({id:uid(),title:v.title.trim(),day:v.day,s,e})},'Событие сохранено');
-});
-function help(t){
-  const o=(l,f)=>h('button',{class:'blk',onclick:f},l);
-  dlg.replaceChildren(h('div',{},h('h2',{},'Что мешает начать?'),h('p',{class:'mu'},'«'+t.title+'»'),
-    o('Не хватает времени',()=>{dlg.close();editTask(t)}),
-    o('Не понимаю, с чего начать',()=>form('Первый шаг на 5–15 минут',[['title','Первое конкретное действие','text','Открыть материалы и записать первый шаг по «'+t.title.slice(0,60)+'»',{required:true,maxlength:120}],['min','Минут','number',10,{min:5,max:15}]],v=>mut(n=>{n.tasks.push({id:uid(),st:'active',moves:0,ts:Date.now(),block:null,title:v.title.trim(),min:+v.min||10,main:false,due:'',day:today()})},'Первый шаг добавлен на сегодня'))),
-    o('Жду другого человека',()=>form('Когда проверить ответ?',[['chk','Дата проверки','date',tom(),{required:true}]],v=>patch(t,{st:'wait',chk:v.chk,block:null},'Задача в «Ожидании»'))),
-    o('Это больше не нужно',()=>{dlg.close();patch(t,{st:'cancel',block:null},'Задача отменена')}),
-    h('button',{class:'blk',onclick:()=>dlg.close()},'Закрыть')));
-  if(!dlg.open)dlg.showModal();
+function timerText(session){const secs=Math.floor(sessionMilliseconds(session)/1000);return secs>=3600?`${Math.floor(secs/3600)}:${String(Math.floor(secs/60)%60).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`:`${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;}
+function renderTimer(){const session=S?.activeSession;const clock=document.getElementById('focus-clock'),strip=document.getElementById('strip-clock');if(!session){if(modalState?.type==='focus')closeModal(true);return;}if(clock)clock.textContent=timerText(session);if(strip)strip.textContent=timerText(session);const pause=document.getElementById('focus-pause');if(pause)pause.replaceChildren(glyph(session.startedAt==null?'play':'pause'),session.startedAt==null?'Продолжить':'Пауза');const caption=document.getElementById('focus-caption');if(caption)caption.textContent=session.startedAt==null?'На паузе · время не прибавляется':sessionMilliseconds(session)>4*60*60*1000?'Долгая сессия. Проверьте, не забыли ли вы поставить паузу.':'Сохранится после закрытия и перезагрузки';}
+function renderSessionStrip(){const strip=document.getElementById('session-strip');if(!S.activeSession){strip.hidden=true;renderTimer();return;}const t=S.tasks.find(t=>t.id===S.activeSession.taskId);strip.hidden=false;strip.replaceChildren(glyph(S.activeSession.startedAt==null?'pause':'play'),el('span',{class:'strip-title'},t?.title||'Сессия'),el('span',{class:'timer-text',id:'strip-clock'},timerText(S.activeSession)));renderTimer();}
+function settingsPage(){const total=S.tasks.filter(t=>!t.del).length;return el('div',{},head('Настройки','План должен подстраиваться под вас'),el('div',{class:'settings-grid'},el('div',{},el('section',{class:'card'},el('div',{class:'timeline-heading'},el('h2',{},'Ритм недели'),glyph('clock')),el('p',{class:'muted'},'Рабочие дни, интервалы, перерыв и время между задачами.'),button('Настроить расписание',()=>editWorkweek(),'soft block'),el('div',{class:'setting-row'},el('h3',{},'Оформление'),el('div',{class:'choice-row'},[['system','Как на устройстве'],['light','Светлое'],['dark','Тёмное']].map(([k,title])=>el('button',{type:'button',class:'chip','aria-pressed':String((S.set.theme||'system')===k),onclick:()=>action(s=>s.set.theme=k,{message:null})},title))))),el('section',{class:'card'},el('h2',{},'Направления работы'),el('div',{class:'setting-row'},el('h3',{},'Проекты'),el('p',{class:'muted'},`${S.projects.length} ${plural(S.projects.length,'проект','проекта','проектов')} · связь задач по постоянному идентификатору`),button('Открыть проекты',()=>route('projects'),'soft','folder')),el('div',{class:'setting-row'},el('h3',{},'Повторяющиеся дела'),el('p',{class:'muted'},`Активных серий: ${S.series.filter(r=>r.enabled).length}. Создаются на 30 дней вперёд. Невыполненное не пропадает.`)))),el('div',{},el('section',{class:'card'},el('div',{class:'timeline-heading'},el('h2',{},'Ваши данные'),glyph('shield')),el('p',{class:'muted'},`${total} ${plural(total,'задача','задачи','задач')} хранится в этом браузере. Облачной синхронизации нет. Очистка данных сайта или потеря устройства может удалить ваши записи.`),el('div',{class:'button-row',style:{marginTop:'16px'}},button('Скачать копию',()=>downloadText(exportState(S),`feit-backup-${dateKey()}.json`),'soft','download'),button('Восстановить',()=>openImport(),'','upload')),el('div',{class:'setting-row'},el('h3',{},'Страховочные копии'),el('p',{class:'muted'},'Перед первым обновлением и заменой данных сохраняется локальная копия. Она не защищает от очистки браузера.'),button('До обновления',()=>downloadStoredBackup('legacy-v1-backup'),'ghost small'),button('До импорта',()=>downloadStoredBackup('before-import-backup'),'ghost small'))),el('section',{class:'card'},el('h2',{},'Приложение на телефоне'),el('p',{class:'muted',style:{marginTop:'10px'}},'Открывайте опубликованный сайт, а не HTML в просмотрщике файлов. В Safari: «Поделиться» → «На экран Домой».'),installPrompt&&button('Установить',async()=>{await installPrompt.prompt();installPrompt=null;render();},'soft','phone'),el('div',{class:'setting-row'},el('h3',{},`Feit Planner ${VERSION}`),el('p',{class:'muted'},'Без внешних сервисов, рекламы и скрытой аналитики. Напоминания при закрытом приложении не реализованы.'),button('Проверить обновление',()=>checkUpdate(),'ghost small','refresh'))))));}
+async function downloadStoredBackup(key){try{const raw=await appStore.rawBackup(key);if(!raw){toast('Этой резервной копии пока нет');return;}downloadText(JSON.stringify(raw,null,2),`feit-${key}.json`);}catch(e){toast(e.message,true);}}
+function editWorkweek(){const original=clone(S.set),rows=[],body=el('div',{}),week=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+ body.append(el('p',{class:'form-help',style:{marginBottom:'18px'}},'Часы задаются по местному времени устройства. Интервалы, выходные и обед участвуют в планировании.'));
+ for(const d of [1,2,3,4,5,6,0]){const enabled=input('checkbox',null,{checked:original.days[d].length>0,'aria-label':`${week[d]} рабочий день`}),list=original.days[d].length?clone(original.days[d]):[[540,1080]],container=el('div',{});const localRows=[];
+  const addRow=(a=540,b=1080)=>{const start=input('time',fmtTime(a),{'aria-label':`${week[d]} начало`}),end=input('time',fmtTime(Math.min(1439,b)),{'aria-label':`${week[d]} конец`}),row={start,end};localRows.push(row);const node=el('div',{class:'week-setting'},localRows.length===1?checkLabel(week[d],enabled):iconButton('close','Удалить интервал',()=>{localRows.splice(localRows.indexOf(row),1);node.remove();modalState.dirty=true;}),start,end);container.append(node);};for(const [a,b]of list)addRow(a,b);
+  body.append(container,button(`Ещё интервал · ${week[d]}`,()=>{addRow(540,1080);modalState.dirty=true;},'ghost small','plus'));rows.push({d,enabled,localRows});
+ }
+ const lunchCheck=input('checkbox',null,{checked:!!original.lunch}),lunchStart=input('time',fmtTime(original.lunch?.[0]??780),{'aria-label':'Перерыв с'}),lunchEnd=input('time',fmtTime(original.lunch?.[1]??840),{'aria-label':'Перерыв до'}),gap=input('number',original.gap,{min:0,max:120,step:1,required:true});
+ body.append(el('div',{class:'details'},checkLabel('Ежедневный перерыв в рабочие дни',lunchCheck),el('div',{class:'form-grid'},field('С',lunchStart),field('До',lunchEnd)),field('До скольких минут между задачами',gap,'Планировщик показывает фактические перерывы. В конце свободного окна они могут быть короче.')));
+ openModal('Рабочее время',body,{onSave:()=>action(s=>{if(JSON.stringify(s.set)!==JSON.stringify(original))throw Error('Настройки изменились в другой вкладке. Откройте форму заново.');const days={};for(const row of rows){days[row.d]=row.enabled.checked?row.localRows.map(({start,end})=>{const a=parseTime(start.value),b=parseTime(end.value);if(b<=a)throw Error(`Проверьте часы: ${week[row.d]}`);return[a,b];}):[];}const lunch=lunchCheck.checked?[parseTime(lunchStart.value),parseTime(lunchEnd.value)]:null;if(lunch&&lunch[1]<=lunch[0])throw Error('Конец перерыва должен быть позже начала');s.set={...s.set,days,lunch,gap:+gap.value};},{label:'Изменение рабочих часов',message:'Рабочее время сохранено'})});
 }
+function openImport(){if(S.activeSession){toast('Сначала сохраните активную сессию',true);return;}const file=input('file','',{accept:'.json,application/json','aria-label':'Выберите резервную копию'}),paste=el('textarea',{rows:5,placeholder:'Или вставьте JSON старой резервной копии','aria-label':'Текст резервной копии'}),info=el('div',{});let parsed=null,expected=null;
+ const verify=async()=>{try{const text=paste.value.trim()||(file.files?.[0]?await file.files[0].text():'');if(!text)throw Error('Выберите JSON-файл или вставьте текст');parsed=parseBackup(text);ensureOccurrences(parsed);expected=S.revision;info.replaceChildren(el('div',{class:'notice neutral'},`${parsed.tasks.length} задач · ${parsed.events.length} событий · ${parsed.projects.length} проектов · ${parsed.goals.length} целей`),el('p',{class:'muted'},'Текущие данные будут заменены. Перед заменой сохраняется локальная страховочная копия.'));}catch(e){parsed=null;info.replaceChildren(el('div',{class:'form-error'},e.message));}};
+ file.onchange=()=>{parsed=null;verify();};paste.oninput=()=>{parsed=null;info.replaceChildren();};
+ openModal('Восстановление из копии',el('div',{},field('JSON-файл',file),el('details',{class:'details'},el('summary',{},glyph('edit'),'Вставить текст вручную'),paste),button('Проверить копию',verify,'soft','shield'),info),{saveText:'Заменить данные',onSave:async()=>{if(!parsed){await verify();return false;}if(!await ask('Заменить все данные?','Задачи, события, проекты и цели будут взяты из проверенной копии.','Заменить'))return false;try{await appStore.replace(parsed,expected);toast('Данные восстановлены');return true;}catch(e){throw e;}}});
+}
+async function checkUpdate(){if(location.protocol==='file:'){toast('Обновления доступны на опубликованном сайте');return;}try{if(!workerRegistration&&'serviceWorker'in navigator)workerRegistration=await navigator.serviceWorker.getRegistration();if(!workerRegistration){toast('Офлайн-режим ещё не установлен. Перезагрузите сайт с интернетом.');return;}await workerRegistration.update();if(workerRegistration.waiting){const yes=await ask('Доступно обновление','Сохранённые дела останутся. Приложение перезагрузится после обновления.','Обновить');if(yes){if(appStore.pending||modalState?.dirty){toast('Сначала сохраните текущие изменения');return;}workerRegistration.waiting.postMessage({type:'ACTIVATE'});navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload(),{once:true});}}else toast('Проверка завершена. При появлении новой версии покажем уведомление.');}catch{toast('Не удалось проверить обновление. Проверьте интернет.',true);}}
+const PAGES={today:todayPage,tasks:tasksPage,calendar:calendarPage,goals:goalsPage,projects:projectsPage,settings:settingsPage};
+appStore.subscribe((state,status)=>{if(state){S=state;if(S.revision!==lastRevision)render();else renderStatus();if(modalState?.type==='plan'&&modalState.planRevision!==S.revision){const stale=document.getElementById('plan-stale');if(stale)stale.hidden=false;const submit=modal.querySelector('[type=submit]');if(submit)submit.disabled=true;}renderTimer();}else if(status.error){main.replaceChildren(el('div',{class:'boot'},el('div',{class:'brand-logo'},'F'),el('h1',{},'Данные не заменены'),el('p',{},status.error),button('Повторить',()=>location.reload(),'primary')));}});
+document.getElementById('fab').onclick=()=>S&&editTask();document.getElementById('session-strip').onclick=openFocus;
+window.addEventListener('beforeunload',e=>{if(appStore.pending||modalState?.dirty){e.preventDefault();e.returnValue='';}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S)appStore.tick().then(()=>{if(dateKey()!==lastDay){lastDay=dateKey();render();}renderTimer();}).catch(e=>toast(e.message,true));});
+setInterval(()=>{if(S)renderTimer();},1000);
+setInterval(()=>{if(S&&!document.hidden){appStore.tick().catch(()=>{});if(!modal.open&&(view==='today'||dateKey()!==lastDay)){lastDay=dateKey();render();}}},60000);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>S&&setTheme());
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
+(async()=>{try{await appStore.init();if('serviceWorker'in navigator&&location.protocol.startsWith('http')){try{workerRegistration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});workerRegistration.addEventListener('updatefound',()=>{const worker=workerRegistration.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)toast('Доступно обновление. Откройте «Настройки» → «Проверить обновление».');});});}catch{toast('Офлайн-режим недоступен. Само приложение работает.',true);}}}catch(e){main.replaceChildren(el('div',{class:'boot'},el('div',{class:'brand-logo'},'F'),el('h1',{},'Не удалось открыть хранилище'),el('p',{},e.message),el('p',{class:'fallback'},'Не очищайте данные браузера. Закройте старые вкладки приложения и попробуйте ещё раз.'),button('Повторить загрузку',()=>location.reload(),'primary'),button('Скачать исходные данные',()=>downloadStoredBackup('state'),'soft','download')));}})();
 
-/* ===== Перестроить день: предпросмотр ничего не сохраняет ===== */
-function rebuild(){
-  const rb={left:{},off:{},end:S.set.e};
-  const calc=()=>planDay(S.tasks.map(t=>rb.left[t.id]?{...t,left:rb.left[t.id]}:t),S.events,{...S.set,e:rb.end},nowMin(),today());
-  const mv=u=>!u.t.main&&!(u.t.due&&u.t.due.slice(0,10)===today());
-  const apply=async()=>{
-    const p=calc(),items=[];
-    const ok=await mut(n=>{
-      const g=id=>n.tasks.find(x=>x.id===id);
-      for(const x of p.placed){const t=g(x.t.id);items.push({id:t.id,b:snap(t)});t.block={s:x.s,e:x.e};if(rb.left[t.id])t.left=rb.left[t.id]}
-      for(const u of p.unplaced){const t=g(u.t.id);items.push({id:t.id,b:snap(t)});t.block=null;if(rb.left[t.id])t.left=rb.left[t.id];if(mv(u)&&!rb.off[t.id]){t.day=tom();t.moves=(t.moves||0)+1}}
-      if(items.length)n.undo={label:'Перестроение дня',items};
-    },'План обновлён');
-    if(ok)dlg.close();
-  };
-  const draw=()=>{
-    const p=calc(),td=today();
-    const old=t=>t.block?hm(t.block.s)+'–'+hm(t.block.e):null;
-    dlg.replaceChildren(h('div',{},h('h2',{},'Предложение'),h('p',{class:'mu'},'Ничего не сохранено, пока вы не нажмёте «Применить». Фиксированные события не двигаются.'),
-      h('label',{},'Закончить сегодня в',h('input',{type:'time',value:hm(rb.end),onchange:e=>{if(e.target.value){rb.end=pm(e.target.value);draw()}}})),
-      ...S.tasks.filter(t=>!t.del&&t.st==='active'&&t.started&&t.day===td).map(t=>h('label',{},'Осталось по «'+t.title+'», мин',h('input',{type:'number',min:5,step:5,value:rb.left[t.id]||t.left||t.min||30,onchange:e=>{rb.left[t.id]=+e.target.value||0;draw()}}))),
-      h('h3',{},'Размещено: '+p.placed.length),
-      ...p.placed.map(x=>{const o=old(x.t),n=hm(x.s)+'–'+hm(x.e);return h('div',{class:'li'},h('b',{},n+' '),x.t.title,h('div',{class:'mu'},o===n?'без изменений':o?'сдвинулось (было '+o+')':'новое время'+(x.t.min||x.t.left?'':' · оценка 30 мин — это предположение')))}),
-      p.unplaced.length>0&&h('h3',{class:'warn'},'Не помещается: '+p.unplaced.length),
-      ...p.unplaced.map(u=>h('div',{class:'li fix'},h('b',{},u.t.title),h('div',{class:'mu'},u.why),mv(u)?h('label',{class:'ck'},h('input',{type:'checkbox',checked:!rb.off[u.t.id],onchange:e=>{rb.off[u.t.id]=!e.target.checked}}),'Перенести на завтра: у задачи нет жёсткого срока'):h('div',{class:'mu'},'Остаётся на сегодня: есть срок или она отмечена главной. Решите вручную.'))),
-      h('div',{class:'row'},h('button',{onclick:()=>dlg.close()},'Отмена'),h('button',{onclick:()=>{dlg.close();view='tasks';flt='today';render()}},'Вручную'),h('button',{class:'pri',onclick:apply},'Применить'))));
-  };
-  draw();if(!dlg.open)dlg.showModal();
-}
-
-/* ===== Экраны ===== */
-const F=[['inbox','Входящие'],['today','Сегодня'],['soon','Предстоящие'],['wait','Ожидание'],['done','Завершённые'],['trash','Корзина']];
-const tr=t=>h('div',{class:'task'},
-  h('button',{'aria-label':t.st==='done'||t.st==='cancel'?'Вернуть в работу':'Отметить выполненной',onclick:()=>setSt(t,t.st==='done'||t.st==='cancel'?'active':'done')},t.st==='done'?'☑':'☐'),
-  h('div',{class:'grow'},h('div',{class:t.st==='done'?'ttl dn':'ttl'},t.title),h('div',{class:'mu'},meta(t)),
-    t.moves>=3&&t.st==='active'&&h('button',{class:'lnk',onclick:()=>help(t)},'Эта задача несколько раз переносилась. Что мешает начать?'),
-    t.st==='wait'&&h('button',{class:'lnk',onclick:()=>patch(t,{st:'active'},'Возвращено в работу')},'Вернуть в работу')),
-  t.del?h('button',{onclick:()=>patch(t,{del:0},'Задача восстановлена')},'Вернуть'):[h('button',{'aria-label':'Изменить «'+t.title+'»',onclick:()=>editTask(t)},'Изм.'),h('button',{'aria-label':'Удалить «'+t.title+'»',onclick:()=>patch(t,{del:Date.now()},'Удалено. Вернуть можно в «Корзине»')},'Удал.')]);
-
-function vTasks(){
-  const td=today(),box=h('div',{class:'card'});
-  const fill=()=>{
-    const f={inbox:t=>t.st==='active'&&!t.day,today:t=>t.st==='active'&&t.day===td,soon:t=>t.st==='active'&&t.day>td,wait:t=>t.st==='wait',done:t=>t.st==='done'||t.st==='cancel',trash:()=>true}[flt];
-    const L=S.tasks.filter(t=>(flt==='trash'?t.del:!t.del&&f(t))&&t.title.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>b.ts-a.ts);
-    box.replaceChildren(...(L.length?L.map(tr):[h('p',{class:'mu'},S.tasks.length?'Здесь ничего нет.':'Пока пусто. Добавьте первое дело кнопкой «+».')]));
-  };
-  fill();
-  return h('div',{},h('div',{class:'sectionhead'},h('h1',{},'Задачи'),h('button',{onclick:()=>{view='projects';render()}},'Проекты')),h('div',{class:'row'},h('input',{type:'search','aria-label':'Поиск',placeholder:'Поиск',value:q,oninput:e=>{q=e.target.value;fill()}}),h('select',{'aria-label':'Фильтр',onchange:e=>{flt=e.target.value;fill()}},...F.map(([k,l])=>h('option',{value:k,selected:k===flt},l)))),h('div',{style:'height:12px'}),box);
-}
-
-function vToday(){
-  const td=today(),n=nowMin(),p=planDay(S.tasks,S.events,S.set,n,td);
-  const act=S.tasks.filter(t=>!t.del&&t.st==='active'&&t.day===td);
-  const items=[...act.filter(t=>t.block&&t.block.e>n).map(t=>({t,s:t.block.s,e:t.block.e})),...S.events.filter(e=>e.day===td&&e.e>n).map(e=>({ev:e,s:e.s,e:e.e}))].sort((a,b)=>a.s-b.s||a.e-b.e);
-  const i0=items.findIndex(x=>x.t),cur=items[i0],nxt=i0>=0?items[i0+1]:items[0];
-  const loose=act.filter(t=>!t.block||t.block.e<=n),miss=p.unplaced.reduce((a,u)=>a+u.n,0);
-  const dn=S.tasks.filter(t=>!t.del&&t.st==='done'&&t.day===td).length,mains=act.filter(t=>t.main).slice(0,3);
-  const evs=S.events.filter(e=>e.day>=td).sort((a,b)=>a.day<b.day?-1:a.day>b.day?1:a.s-b.s).slice(0,10);
-  const ds=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
-  return h('div',{},
-    h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Сегодня'),h('div',{class:'sub'},ds[0].toUpperCase()+ds.slice(1)))),
-    h('div',{class:'card hero'},h('h3',{},'Ваш день'),
-      h('p',{},'Свободно: '+dur(p.total),h('br'),'Запланировано: '+dur(p.planned),miss?[h('br'),h('b',{class:'warn'},'⚠ Не помещается: '+dur(miss))]:null),
-      h('div',{class:'progress'},h('span',{style:'width:'+(act.length+dn?dn/(act.length+dn)*100:0)+'%'})),
-      h('p',{},dn+' из '+(act.length+dn)+' задач выполнено'),
-      p.free.length?h('p',{class:'mu'},'Промежутки: '+p.free.map(g=>hm(g[0])+'–'+hm(g[1])).join(', ')):h('p',{class:'warn'},'Свободного времени не осталось.'),
-      miss?h('p',{class:'warn'},'Сегодня всё не помещается. Выберем главное.'):null,
-      h('button',{class:'pri blk',onclick:rebuild},'Перестроить день')),
-    S.undo&&h('div',{class:'card row'},h('span',{class:'mu grow'},S.undo.label),h('button',{onclick:undo},'Отменить')),
-    h('div',{class:'card'},h('h3',{},'Сейчас'),
-      cur?[h('div',{class:'ttl'},cur.t.title),h('div',{class:'mu'},hm(cur.s)+'–'+hm(cur.e)+' · '+dur(need(cur.t))+(cur.t.started?' · в работе':'')),
-        h('div',{class:'row'},h('button',{class:'pri',onclick:()=>focus(cur.t)},'Начать'),h('button',{onclick:()=>setSt(cur.t,'done')},'Готово'),h('button',{onclick:()=>postpone(cur.t)},'Отложить')),
-        cur.t.moves>=3&&h('button',{class:'lnk',onclick:()=>help(cur.t)},'Эта задача несколько раз переносилась. Что мешает начать?')]
-      :h('p',{class:'mu'},loose.length?'Задач без времени: '+loose.length+'. Нажмите «Перестроить день».':dn?'Всё сделано. День завершён.':'На сегодня задач нет. Добавьте дело кнопкой «+».')),
-    h('div',{class:'card'},h('h3',{},'Дальше'),h('p',{},nxt?hm(nxt.s)+' · '+(nxt.t?nxt.t.title:nxt.ev.title+' (фиксировано)'):'Больше ничего не запланировано')),
-    h('div',{class:'card'},h('h3',{},'Главное сегодня'),mains.length?mains.map(t=>h('div',{class:'task'},h('button',{'aria-label':'Готово: '+t.title,onclick:()=>setSt(t,'done')},'☐'),h('div',{class:'grow'},t.title))):h('p',{class:'mu'},'Отметьте до трёх главных дел в карточке задачи.')),
-    loose.length>0&&h('div',{class:'card'},h('h3',{},'Без времени'),...loose.map(t=>h('div',{class:'li'},t.title,h('div',{class:'mu'},meta(t))))),
-    h('div',{class:'card'},h('h3',{},'Остаток дня'),items.length?items.map(x=>h('div',{class:x.ev?'li fix':'li'},h('b',{},hm(x.s)+'–'+hm(x.e)+' '),x.ev?x.ev.title+' · фиксировано':x.t.title+' · гибкий план')):h('p',{class:'mu'},'Пока пусто')),
-    h('div',{class:'card'},h('div',{class:'statrow'},h('h3',{},'Проекты'),h('button',{class:'lnk',onclick:()=>{view='projects';render()}},'Открыть')),h('p',{class:'mu'},(S.projects||[]).length+' проектов')),
-     h('div',{class:'card'},h('h3',{},'Фиксированные события'),...evs.map(e=>h('div',{class:'task'},h('div',{class:'grow'},e.title,h('div',{class:'mu'},(e.day===td?'сегодня':dm(e.day))+' · '+hm(e.s)+'–'+hm(e.e))),h('button',{'aria-label':'Удалить событие '+e.title,onclick:()=>mut(x=>{x.events=x.events.filter(y=>y.id!==e.id)},'Событие удалено')},'Удал.'))),h('button',{class:'blk',onclick:addEvent},'+ Событие')));
-}
-
-const valid=o=>{const ok=o&&o.v===1&&Array.isArray(o.tasks)&&Array.isArray(o.events)&&o.set&&[o.set.s,o.set.e,o.set.gap].every(Number.isFinite)&&o.set.e>o.set.s&&o.tasks.every(t=>t&&typeof t.id==='string'&&typeof t.title==='string'&&Number.isFinite(t.ts)&&['active','wait','done','cancel'].includes(t.st))&&o.events.every(e=>e&&typeof e.id==='string'&&typeof e.title==='string'&&/^\d{4}-\d\d-\d\d$/.test(e.day)&&Number.isFinite(e.s)&&Number.isFinite(e.e)&&e.e>e.s);if(!ok)throw Error('bad')};
-
-function vSet(){
-  const s=S.set,A=h('input',{type:'time',value:hm(s.s),required:true}),B=h('input',{type:'time',value:hm(s.e),required:true}),G=h('input',{type:'number',min:0,max:60,step:5,value:s.gap});
-  const out=h('textarea',{rows:5,readonly:true,'aria-label':'Резервная копия'}),inp=h('textarea',{rows:5,placeholder:'Вставьте сюда копию (JSON)','aria-label':'Импорт копии'}),info=h('div',{class:'mu'});
-  const copy=()=>JSON.stringify({...S,undo:null});
-  const check=()=>{try{const o=JSON.parse(inp.value);valid(o);info.replaceChildren('Будет импортировано: задач — '+o.tasks.length+', событий — '+o.events.length+'. Текущие данные будут заменены. ',h('button',{class:'pri',onclick:()=>commit({...empty(),...o,projects:o.projects||[],goals:o.goals||[],sessions:o.sessions||[],undo:null},'Данные импортированы')},'Заменить'))}catch(e){info.textContent='Копия повреждена или не подходит. Ваши данные не изменены.'}};
-  return h('div',{},
-    h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Настройки'))),h('button',{class:'blk',onclick:()=>{view='projects';render()}},'Проекты →'),h('div',{class:'card'},h('h2',{},'Рабочий день'),h('label',{},'Начало',A),h('label',{},'Конец',B),h('label',{},'Перерыв между задачами, мин',G),
-      h('button',{class:'pri',onclick:()=>{if(!A.value||!B.value||pm(B.value)<=pm(A.value))return toast('Конец должен быть позже начала',true);mut(n=>{n.set={s:pm(A.value),e:pm(B.value),gap:Math.max(0,+G.value||0)}},'Настройки сохранены')}},'Сохранить')),
-    h('div',{class:'card'},h('h2',{},'Резервная копия'),
-      h('p',{class:'mu'},'Данные хранятся в этом браузере. Очистка данных сайта или потеря устройства может привести к их удалению. Сохраняйте резервную копию. Это не облачная синхронизация.'),
-      h('div',{class:'row'},h('button',{onclick:()=>{out.value=copy();out.select()}},'Показать копию'),h('button',{onclick:async()=>{out.value=copy();try{await navigator.clipboard.writeText(out.value);toast('Скопировано')}catch(e){out.select();toast('Скопируйте выделенный текст вручную')}}},'Копировать'),h('button',{onclick:()=>{const blob=new Blob([copy()],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='feit-planner-backup-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}},'Скачать файл')),
-      out,h('h3',{style:'margin-top:14px'},'Восстановить из копии'),inp,h('button',{class:'blk',onclick:check},'Проверить'),info));
-}
-
-
-/* ===== Дополнительные экраны и инструменты ===== */
-let calDay=today(),calMode='week',focusId=null,focusStart=null,focusAccum=0;
-const datePlus=(day,count)=>{const d=new Date(day+'T12:00:00');d.setDate(d.getDate()+count);return dstr(d)};
-const escList=(list,emptyText)=>list.length?list:[h('div',{class:'empty'},h('strong',{},'Пока пусто'),emptyText)];
-function addProject(){form('Новый проект',[['title','Название','text','',{required:true,maxlength:65}]],v=>{if(!v.title.trim())return'Введите название';return mut(n=>{n.projects??=[];n.projects.push({id:uid(),title:v.title.trim()})},'Проект создан')})}
-function addGoal(g){g=g||{};form(g.id?'Изменить цель':'Новая цель',[['title','Название','text',g.title||'',{required:true}],['target','Целевой результат','number',g.target||4,{min:1}],['value','Уже выполнено','number',g.value||0,{min:0}],['unit','Единица (ролики, книги...)','text',g.unit||'раз']],v=>{if(!v.title.trim())return'Введите название';return mut(n=>{n.goals??=[];const obj={id:g.id||uid(),title:v.title.trim(),target:Math.max(1,+v.target||1),value:Math.max(0,+v.value||0),unit:v.unit};if(g.id){const i=n.goals.findIndex(x=>x.id===g.id);n.goals[i]=obj}else n.goals.push(obj)},'Цель сохранена')})}
-function vGoals(){const goals=S.goals||[],done=S.tasks.filter(t=>t.st==='done'&&!t.del).length;
- return h('div',{},h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Мои цели'))),
- h('div',{class:'card hero'},h('div',{class:'eyebrow',style:'color:#e6eaff'},'ВАШ ПРОГРЕСС'),h('div',{class:'metric'},h('div',{},h('b',{},String(done)),'задач выполнено'),h('div',{},h('b',{},String((S.sessions||[]).reduce((a,b)=>a+b.minutes,0)),'минут фокуса')),h('p',{},'Важны результаты, а не количество галочек.')),
- h('div',{class:'sectionhead'},h('h2',{},'Долгосрочные цели'),h('button',{class:'pri',onclick:()=>addGoal()},'+ Цель')),
- ...escList(goals.map(g=>h('div',{class:'card'},h('div',{class:'statrow'},h('div',{},h('h3',{},g.title),h('div',{class:'mu'},g.value+' из '+g.target+' '+(g.unit||''))),h('button',{onclick:()=>addGoal(g)},'Изменить')),h('div',{class:'goalbar'},h('div',{style:'width:'+Math.min(100,100*g.value/g.target)+'%'})),h('div',{class:'row'},h('button',{onclick:()=>mut(n=>{n.goals.find(x=>x.id===g.id).value++},'Прогресс обновлён')},'+ 1 к результату'),h('button',{onclick:()=>{if(confirm('Удалить цель?'))mut(n=>{n.goals=n.goals.filter(x=>x.id!==g.id)},'Цель удалена')}},'Удалить'))))), 'Добавьте первую измеримую цель'));
-}
-function vProjects(){const ps=S.projects||[];return h('div',{},h('h1',{},'Проекты'),h('p',{class:'sub'},'Разделите большие задачи по направлениям.'),h('button',{class:'pri',onclick:addProject},'+ Новый проект'),h('div',{style:'height:16px'}),...escList(ps.map(p=>{const ts=S.tasks.filter(t=>!t.del&&t.project===p.title);return h('div',{class:'card'},h('div',{class:'statrow'},h('div',{},h('h2',{},p.title),h('div',{class:'mu'},ts.filter(t=>t.st==='done').length+' из '+ts.length+' завершено')),h('button',{onclick:()=>{view='tasks';flt='inbox';q='';render()}},'Задачи')),h('div',{class:'progress'},h('span',{style:'width:'+(ts.length?ts.filter(t=>t.st==='done').length/ts.length*100:0)+'%'})),h('div',{class:'row'},h('button',{onclick:()=>form('Название проекта',[['title','Название','text',p.title,{required:true}]],v=>mut(n=>{const a=n.projects.find(x=>x.id===p.id),prev=a.title;a.title=v.title.trim();n.tasks.filter(t=>t.project===prev).forEach(t=>t.project=a.title)},'Проект изменён'))},'Переименовать'),h('button',{onclick:()=>{if(confirm('Удалить проект? Задачи будут сохранены без проекта.'))mut(n=>{n.tasks.filter(t=>t.project===p.title).forEach(t=>t.project='');n.projects=n.projects.filter(x=>x.id!==p.id)},'Проект удалён')}},'Удалить')))}), 'Создайте первый проект'))}
-function vCalendar(){const weekstart=datePlus(calDay,-(new Date(calDay+'T12:00:00').getDay()+6)%7);const days=Array.from({length:7},(_,i)=>datePlus(weekstart,i));const ts=S.tasks.filter(t=>!t.del&&t.day===calDay),evs=S.events.filter(e=>e.day===calDay);
- const entries=[...ts.filter(t=>t.block).map(t=>({time:t.block.s,end:t.block.e,title:t.title,fix:!!t.locked,task:t})),...evs.map(e=>({time:e.s,end:e.e,title:e.title,fix:true}))].sort((a,b)=>a.time-b.time);
- return h('div',{},h('div',{class:'brand'},h('span',{class:'brandmark'},'F'),h('div',{},h('div',{class:'eyebrow'},'FEIT PLANNER'),h('h1',{},'Календарь'))),
- h('div',{class:'card'},h('div',{class:'statrow'},h('button',{onclick:()=>{calDay=datePlus(calDay,-7);render()}},'←'),h('b',{},new Date(calDay+'T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})),h('button',{onclick:()=>{calDay=datePlus(calDay,7);render()}},'→')),h('div',{class:'daygrid'},...days.map(d=>h('button',{class:'daycell'+(d===calDay?' active':''),onclick:()=>{calDay=d;render()}},h('small',{},new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'short'})),h('b',{},String(+d.slice(-2))),((S.tasks.some(t=>!t.del&&t.day===d)||S.events.some(e=>e.day===d)))?h('span',{class:'dot'}):null))),h('button',{class:'lnk',onclick:()=>{calDay=today();render()}},'Перейти к сегодня')),
- h('div',{class:'sectionhead'},h('h2',{},new Date(calDay+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'})),h('button',{onclick:()=>addEvent()},'+ Событие')),
- ...escList(entries.map(x=>h('div',{class:'eventline'},h('div',{class:'eventtime'},hm(x.time)),h('div',{class:'eventbody'+(x.fix?' fixed':'')},h('b',{},x.title),h('div',{class:'mu'},hm(x.time)+'–'+hm(x.end)+(x.fix?' · закреплено':' · задача')),x.task&&h('button',{class:'lnk',onclick:()=>editTask(x.task)},'Изменить')))), 'На выбранный день нет задач с временем'),
- ts.filter(t=>!t.block).length>0&&h('div',{class:'card'},h('h3',{},'Без времени'),...ts.filter(t=>!t.block).map(t=>h('div',{class:'task'},h('div',{class:'grow'},t.title),h('button',{onclick:()=>editTask(t)},'Изменить')))));
-}
-function focus(t){focusId=t.id;const elapsed=()=>Math.floor(((focusStart?Date.now()-focusStart:0)+focusAccum)/1000);const draw=()=>{if(!dlg.open||focusId!==t.id)return;const sec=elapsed();const clock=dlg.querySelector('#focusclock');if(clock)clock.textContent=pad(Math.floor(sec/60))+':'+pad(sec%60)};
- const finish=async(done)=>{const secs=elapsed();focusStart=null;focusAccum=0;focusId=null;await mut(n=>{n.sessions??=[];if(secs>=10)n.sessions.push({id:uid(),task:t.id,day:today(),minutes:Math.max(1,Math.round(secs/60))});if(done){const x=n.tasks.find(x=>x.id===t.id);if(x)x.st='done'}},done?'Задача выполнена':'Сессия сохранена');dlg.close()};
- dlg.replaceChildren(h('div',{},h('div',{class:'eyebrow'},'РЕЖИМ ФОКУСА'),h('h2',{},t.title),h('div',{id:'focusclock',class:'focus-clock'},'00:00'),h('div',{class:'row'},h('button',{onclick:()=>{if(focusStart){focusAccum+=Date.now()-focusStart;focusStart=null}else focusStart=Date.now();draw()}},'Пауза / продолжить'),h('button',{onclick:()=>finish(false)},'Завершить'),h('button',{class:'pri',onclick:()=>finish(true)},'Готово'))));dlg.showModal();focusAccum=0;focusStart=Date.now();const timer=setInterval(()=>{if(!dlg.open||focusId!==t.id){clearInterval(timer);return}draw()},1000);
-}
-const V={today:vToday,calendar:vCalendar,tasks:vTasks,goals:vGoals,projects:vProjects,set:vSet};
-const app=h('main',{id:'app'},'Загрузка…');
-const nav=h('nav',{'aria-label':'Разделы'},...[['today','Сегодня','⌂'],['calendar','Календарь','▦'],['tasks','Задачи','☷'],['goals','Цели','◎'],['set','Ещё','⚙']].map(([k,l,ic])=>h('button',{'data-v':k,onclick:()=>{view=k;render();scrollTo(0,0)}},h('span',{style:'font-size:21px;line-height:1'},ic),l)));
-function render(){app.replaceChildren(V[view]());nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.v===view?'page':'false'))}
-document.body.append(app,nav,h('button',{class:'pri fab','aria-label':'Добавить задачу',onclick:()=>editTask()},'+'),dlg,tz);
-(async()=>{try{const o=await get('state');S=o&&o.v===1?{...empty(),...o,projects:o.projects||[],goals:o.goals||[],sessions:o.sessions||[]}:empty()}catch(e){S=empty();toast('Хранилище недоступно: данные не сохранятся',true)}render()})();
-setInterval(()=>{if(S&&view==='today'&&!dlg.open)render()},60000);
-document.addEventListener('visibilitychange',()=>{if(S&&!document.hidden&&view==='today'&&!dlg.open)render()});
-</script>
-<script>if("serviceWorker" in navigator && location.protocol.startsWith("http"))window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));</script>
-</body>
-</html>
+})();</script>
+</body></html>

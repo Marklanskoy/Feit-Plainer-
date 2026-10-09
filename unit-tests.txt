@@ -1,0 +1,308 @@
+
+> feit-planner@2.0.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: unfinished yesterday task is carryover, remains active and searchable
+ok 1 - unfinished yesterday task is carryover, remains active and searchable
+  ---
+  duration_ms: 1.190506
+  type: 'test'
+  ...
+# Subtest: intentional future postponement is not silently pulled back by an old deadline
+ok 2 - intentional future postponement is not silently pulled back by an old deadline
+  ---
+  duration_ms: 0.265762
+  type: 'test'
+  ...
+# Subtest: carryover requires explicit inclusion in the new plan
+ok 3 - carryover requires explicit inclusion in the new plan
+  ---
+  duration_ms: 2.031736
+  type: 'test'
+  ...
+# Subtest: overdue task can be planned today without changing its deadline
+ok 4 - overdue task can be planned today without changing its deadline
+  ---
+  duration_ms: 0.672536
+  type: 'test'
+  ...
+# Subtest: missed deadline earlier today no longer makes task permanently unschedulable
+ok 5 - missed deadline earlier today no longer makes task permanently unschedulable
+  ---
+  duration_ms: 0.315996
+  type: 'test'
+  ...
+# Subtest: future hard deadline remains a constraint
+ok 6 - future hard deadline remains a constraint
+  ---
+  duration_ms: 0.494649
+  type: 'test'
+  ...
+# Subtest: union of overlapping events is deducted once
+ok 7 - union of overlapping events is deducted once
+  ---
+  duration_ms: 0.299932
+  type: 'test'
+  ...
+# Subtest: no plan before current time
+ok 8 - no plan before current time
+  ---
+  duration_ms: 0.296668
+  type: 'test'
+  ...
+# Subtest: no negative free capacity after workday
+ok 9 - no negative free capacity after workday
+  ---
+  duration_ms: 0.422143
+  type: 'test'
+  ...
+# Subtest: fixed tasks block time and retain their original placement
+ok 10 - fixed tasks block time and retain their original placement
+  ---
+  duration_ms: 0.506227
+  type: 'test'
+  ...
+# Subtest: conflicting fixed blocks require user action
+ok 11 - conflicting fixed blocks require user action
+  ---
+  duration_ms: 0.606444
+  type: 'test'
+  ...
+# Subtest: expired locked task is not moved automatically
+ok 12 - expired locked task is not moved automatically
+  ---
+  duration_ms: 1.03784
+  type: 'test'
+  ...
+# Subtest: unsplittable task cannot use fragmented time
+ok 13 - unsplittable task cannot use fragmented time
+  ---
+  duration_ms: 0.230489
+  type: 'test'
+  ...
+# Subtest: breaks are explicit and not deducted twice
+ok 14 - breaks are explicit and not deducted twice
+  ---
+  duration_ms: 0.556751
+  type: 'test'
+  ...
+# Subtest: zero remaining duration never falls back to the original estimate
+ok 15 - zero remaining duration never falls back to the original estimate
+  ---
+  duration_ms: 0.139686
+  type: 'test'
+  ...
+# Subtest: preview is pure and cancelling it changes nothing
+ok 16 - preview is pure and cancelling it changes nothing
+  ---
+  duration_ms: 0.287904
+  type: 'test'
+  ...
+# Subtest: stale preview cannot overwrite newer changes
+ok 17 - stale preview cannot overwrite newer changes
+  ---
+  duration_ms: 0.239684
+  type: 'test'
+  ...
+# Subtest: default unplaced handling never silently transfers to tomorrow
+ok 18 - default unplaced handling never silently transfers to tomorrow
+  ---
+  duration_ms: 0.174908
+  type: 'test'
+  ...
+# Subtest: explicit transfer increments moves once and preserves deadline
+ok 19 - explicit transfer increments moves once and preserves deadline
+  ---
+  duration_ms: 0.184272
+  type: 'test'
+  ...
+# Subtest: current event takes priority over a future task
+ok 20 - current event takes priority over a future task
+  ---
+  duration_ms: 0.545815
+  type: 'test'
+  ...
+# Subtest: future task is not labelled as current
+ok 21 - future task is not labelled as current
+  ---
+  duration_ms: 0.247375
+  type: 'test'
+  ...
+# Subtest: do not suggest an unestimated or estimated task that cannot fit before meeting
+ok 22 - do not suggest an unestimated or estimated task that cannot fit before meeting
+  ---
+  duration_ms: 0.19027
+  type: 'test'
+  ...
+# Subtest: waiting and completed tasks do not consume work time
+ok 23 - waiting and completed tasks do not consume work time
+  ---
+  duration_ms: 0.185704
+  type: 'test'
+  ...
+# Subtest: daily recurrence is idempotent
+ok 24 - daily recurrence is idempotent
+  ---
+  duration_ms: 3.117036
+  type: 'test'
+  ...
+# Subtest: monthly recurrence returns to the 31st after a short month
+ok 25 - monthly recurrence returns to the 31st after a short month
+  ---
+  duration_ms: 0.082622
+  type: 'test'
+  ...
+# Subtest: date-only arithmetic does not convert through UTC
+ok 26 - date-only arithmetic does not convert through UTC
+  ---
+  duration_ms: 0.110272
+  type: 'test'
+  ...
+# Subtest: stopping a recurrence prevents generation
+ok 27 - stopping a recurrence prevents generation
+  ---
+  duration_ms: 0.140447
+  type: 'test'
+  ...
+# Subtest: focus survives state serialization and pauses accurately
+ok 28 - focus survives state serialization and pauses accurately
+  ---
+  duration_ms: 0.885175
+  type: 'test'
+  ...
+# Subtest: focus completion can happen only once
+ok 29 - focus completion can happen only once
+  ---
+  duration_ms: 0.303267
+  type: 'test'
+  ...
+# Subtest: two active focus sessions are forbidden
+ok 30 - two active focus sessions are forbidden
+  ---
+  duration_ms: 0.219834
+  type: 'test'
+  ...
+# Subtest: legacy data migrates, uses stable project IDs and does not activate old nonworking repeats
+ok 31 - legacy data migrates, uses stable project IDs and does not activate old nonworking repeats
+  ---
+  duration_ms: 0.302967
+  type: 'test'
+  ...
+# Subtest: backup round-trip preserves tasks, projects, goals and relationships
+ok 32 - backup round-trip preserves tasks, projects, goals and relationships
+  ---
+  duration_ms: 0.425477
+  type: 'test'
+  ...
+# Subtest: malformed and structurally invalid imports are rejected
+ok 33 - malformed and structurally invalid imports are rejected
+  ---
+  duration_ms: 0.53606
+  type: 'test'
+  ...
+# Subtest: stale task form cannot overwrite newer edits
+ok 34 - stale task form cannot overwrite newer edits
+  ---
+  duration_ms: 0.137122
+  type: 'test'
+  ...
+# Subtest: date and hard deadline remain separate when editing
+ok 35 - date and hard deadline remain separate when editing
+  ---
+  duration_ms: 0.165454
+  type: 'test'
+  ...
+# Subtest: manual schedule overlap is rejected
+ok 36 - manual schedule overlap is rejected
+  ---
+  duration_ms: 0.159996
+  type: 'test'
+  ...
+# Subtest: goal progress is derived without double increment on repeat completion
+ok 37 - goal progress is derived without double increment on repeat completion
+  ---
+  duration_ms: 0.236288
+  type: 'test'
+  ...
+# Subtest: undo changes only the operation fields and preserves unrelated additions
+ok 38 - undo changes only the operation fields and preserves unrelated additions
+  ---
+  duration_ms: 2.36672
+  type: 'test'
+  ...
+# Subtest: undo rejects overwrite of a newer change to the same field
+ok 39 - undo rejects overwrite of a newer change to the same field
+  ---
+  duration_ms: 0.262527
+  type: 'test'
+  ...
+# Subtest: plan is deterministic
+ok 40 - plan is deterministic
+  ---
+  duration_ms: 0.416053
+  type: 'test'
+  ...
+# Subtest: 100 generated scenarios: proposed blocks never overlap, extend past windows or start in past
+ok 41 - 100 generated scenarios: proposed blocks never overlap, extend past windows or start in past
+  ---
+  duration_ms: 11.378508
+  type: 'test'
+  ...
+# Subtest: storage contract: UI changes only after transaction completion
+ok 42 - storage contract: UI changes only after transaction completion
+  ---
+  duration_ms: 2.96336
+  type: 'test'
+  ...
+# Subtest: storage contract: 30 rapid queued updates all survive
+ok 43 - storage contract: 30 rapid queued updates all survive
+  ---
+  duration_ms: 11.40558
+  type: 'test'
+  ...
+# Subtest: storage contract: two independent adapters read latest state inside each transaction
+ok 44 - storage contract: two independent adapters read latest state inside each transaction
+  ---
+  duration_ms: 1.218136
+  type: 'test'
+  ...
+# Subtest: storage contract: an abort after successful put leaves UI and persistent state unchanged
+ok 45 - storage contract: an abort after successful put leaves UI and persistent state unchanged
+  ---
+  duration_ms: 1.474554
+  type: 'test'
+  ...
+# Subtest: storage contract: synchronous write failure can be retried safely
+ok 46 - storage contract: synchronous write failure can be retried safely
+  ---
+  duration_ms: 0.763646
+  type: 'test'
+  ...
+# Subtest: storage contract: old state is backed up before migration
+ok 47 - storage contract: old state is backed up before migration
+  ---
+  duration_ms: 0.462052
+  type: 'test'
+  ...
+# Subtest: storage contract: replacement is version-checked and has a local pre-import backup
+ok 48 - storage contract: replacement is version-checked and has a local pre-import backup
+  ---
+  duration_ms: 1.092931
+  type: 'test'
+  ...
+# Subtest: storage contract: validation failure does not replace existing data
+ok 49 - storage contract: validation failure does not replace existing data
+  ---
+  duration_ms: 0.803265
+  type: 'test'
+  ...
+1..49
+# tests 49
+# suites 0
+# pass 49
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 112.502329
